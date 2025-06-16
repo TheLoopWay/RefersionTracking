@@ -27,11 +27,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "api/server.js": {
-      "excludeFiles": "api/server.js"
-    }
-  },
-  "public": true
+  ]
 }
