@@ -1,0 +1,12 @@
+{
+  "name": "refersion-tracking-test",
+  "version": "1.0.0",
+  "description": "Simple server for testing Refersion referral tracking and cookies",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
