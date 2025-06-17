@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peptide Coaching Inquiry - LOOP</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="form-container">
+    <div class="form-logo">
+      <img src="https://242518594.fs1.hubspotusercontent-na2.net/hubfs/242518594/LOOP%20250%20wide-3.png" alt="LOOP" />
+    </div>
+    
+    <div class="form-header">
+      <h1 class="form-title">Start Here — Your First Magical Step</h1>
+      <p class="form-description">
+        Welcome to The LOOP Way, a modern approach to self-education in peptides and performance wellness.
+      </p>
+      <p class="form-description">
+        Fill out the quick form below and we'll email you the best next steps for learning about research peptides — 
+        what they are, how they work, and how they may support your personal goals.
+      </p>
+    </div>
+    
+    <form id="peptide-form" data-redirect-url="/thank-you">
+      <div class="form-fields">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstname">First Name<span class="required">*</span></label>
+            <input type="text" id="firstname" name="firstname" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="lastname">Last Name<span class="required">*</span></label>
+            <input type="text" id="lastname" name="lastname" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email<span class="required">*</span></label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="date_of_birth_1">Date of Birth<span class="required">*</span></label>
+            <input type="date" id="date_of_birth_1" name="date_of_birth_1" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="health_goals">What are your primary health goals?</label>
+            <textarea id="health_goals" name="health_goals" placeholder="Tell us about your wellness journey..."></textarea>
+          </div>
+        </div>
+        
+        <div class="consent-section">
+          <p class="consent-text">
+            <strong>Consent & Liability Waiver</strong><br>
+            By submitting this form, I acknowledge and agree to the following: No Medical Services: Loop Health & Wellness 
+            does not diagnose, treat, or prescribe. All services and content are for informational and educational purposes 
+            only and do not replace advice from a licensed medical provider. Research Use Only: Peptides referenced are 
+            intended for research purposes only. They are not FDA-approved for human use. Personal Responsibility: I assume 
+            full responsibility for my health decisions and understand that any suggestions from LOOP are not medical advice. 
+            I agree to consult a licensed healthcare provider before starting any wellness or supplement protocol.
+          </p>
+          
+          <label class="checkbox-label">
+            <input type="checkbox" name="i_agree_" value="true" required>
+            <span>I agree to the terms above<span class="required">*</span></span>
+          </label>
+        </div>
+      </div>
+      
+      <button type="submit" class="submit-button">Submit</button>
+      
+      <div id="form-message" class="form-message"></div>
+    </form>
+  </div>
+
+  <!-- Refersion Tracking Pixel -->
+  <script src="https://www.refersion.com/conversion/w00hw4"></script>
+  
+  <!-- Form Handler -->
+  <script type="module">
+    import { FormHandler } from '/js/forms.js';
+    import '/js/iframe-resize.js';
+    
+    new FormHandler({
+      portalId: '242518594',
+      formId: '09ab75f6-bfbc-4d1c-8761-9ff764b650ca',
+      formElementId: 'peptide-form',
+      messageElementId: 'form-message'
+    });
+  </script>
+</body>
+</html>

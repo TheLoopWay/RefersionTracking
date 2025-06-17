@@ -1,12 +1,16 @@
 {
-  "name": "refersion-tracking-test",
+  "name": "loop-forms",
   "version": "1.0.0",
-  "description": "Simple server for testing Refersion referral tracking and cookies",
-  "main": "server.js",
+  "description": "LOOP Forms Platform with Refersion Tracking",
+  "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vercel --prod"
   },
-  "dependencies": {
-    "express": "^4.18.2"
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vercel": "^32.0.0"
   }
 }

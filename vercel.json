@@ -1,15 +1,36 @@
 {
-  "buildCommand": "echo 'No build required'",
-  "outputDirectory": ".",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "framework": null,
-  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/index.html"
+      "source": "/embed.js",
+      "destination": "/embed.js"
+    },
+    {
+      "source": "/api/track",
+      "destination": "/api/track.js"
     }
   ],
+  "functions": {
+    "api/track.js": {
+      "runtime": "edge"
+    }
+  },
   "headers": [
+    {
+      "source": "/embed.js",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
@@ -20,10 +41,6 @@
         {
           "key": "X-Frame-Options",
           "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
         }
       ]
     }
