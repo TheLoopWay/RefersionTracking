@@ -1,0 +1,40 @@
+<!-- Minimal tracking script for Squarespace Code Injection (Settings → Advanced → Code Injection → Footer) -->
+<script>
+// This simple script should work in Code Injection
+(function() {
+    // Get tracking parameter
+    var params = new URLSearchParams(window.location.search);
+    var rfsn = params.get('rfsn');
+    
+    if (rfsn) {
+        // Store in cookie
+        document.cookie = 'rfsn=' + rfsn + '; max-age=2592000; path=/';
+        
+        // Track with Refersion if available
+        if (window.r) {
+            try {
+                window.r('click', rfsn);
+            } catch(e) {}
+        }
+    }
+    
+    // If on form page, try to populate hidden fields
+    if (window.location.pathname.includes('peptide-coaching-inquiry-page')) {
+        // Get stored rfsn
+        var storedRfsn = rfsn || (document.cookie.match(/rfsn=([^;]+)/) || [])[1];
+        
+        if (storedRfsn) {
+            // Wait for form to load
+            setTimeout(function() {
+                // Try to find hidden inputs
+                var inputs = document.querySelectorAll('input[type="hidden"]');
+                for (var i = 0; i < inputs.length; i++) {
+                    if (inputs[i].name && inputs[i].name.includes('refersionid')) {
+                        inputs[i].value = storedRfsn;
+                    }
+                }
+            }, 2000);
+        }
+    }
+})();
+</script>

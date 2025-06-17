@@ -166,6 +166,11 @@
           <td>Tracking scripts that run on every page</td>
         </tr>
         <tr>
+          <td><strong>Integration Script File</strong></td>
+          <td>Settings → Advanced → Developer Tools → Upload</td>
+          <td>Main integration script (hubspot-integration-v2.js)</td>
+        </tr>
+        <tr>
           <td><strong>Form Integration</strong></td>
           <td>Specific page with HubSpot form</td>
           <td>Connects referral data to form submissions</td>
@@ -176,6 +181,46 @@
           <td>Tracks completed purchases</td>
         </tr>
       </table>
+    </div>
+
+    <div class="section">
+      <h2>🚀 Quick Setup Steps</h2>
+      
+      <ol>
+        <li>
+          <strong>Choose Integration Script Option:</strong>
+          <div style="margin: 10px 0;">
+            <strong>Option A: Use CDN (Easier)</strong>
+            <ul>
+              <li>No upload needed</li>
+              <li>Use URL: <code>https://refersion.vercel.app/src/hubspot-integration-v2.js</code></li>
+            </ul>
+            <strong>Option B: Upload to Squarespace</strong>
+            <ul>
+              <li>Download <code>hubspot-integration-v2.js</code> from this repository</li>
+              <li>Go to Settings → Advanced → Developer Tools</li>
+              <li>Click "Manage Developer Tools"</li>
+              <li>Upload the file</li>
+              <li>Note the URL (usually <code>/s/hubspot-integration-v2.js</code>)</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <strong>Add Global Tracking Scripts:</strong>
+          <ul>
+            <li>Copy the code from Step 1 below</li>
+            <li>Paste in Settings → Advanced → Code Injection → Header</li>
+            <li>Replace <code>YOUR-REFERSION-PUBLIC-KEY</code> with your actual key</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Add Form Integration:</strong>
+          <ul>
+            <li>On pages with HubSpot forms, add the appropriate code from Step 2</li>
+            <li>Replace <code>YOUR-FORM-ID</code> with your actual form ID</li>
+          </ul>
+        </li>
+      </ol>
     </div>
 
     <div class="section">
@@ -257,7 +302,30 @@ r('pubkey', 'YOUR-REFERSION-PUBLIC-KEY');
         Add this to pages with HubSpot forms using a <strong>Code Block</strong>
       </p>
 
-      <h3>Option A: Using HubSpot Forms API (Recommended)</h3>
+      <h3>Option A: New HubSpot Embed Format (Latest)</h3>
+      <p>If you're using HubSpot's new embed code format:</p>
+      
+      <div class="code-container">
+        <button class="copy-button" onclick="copyCode('form-new')">Copy</button>
+        <pre><code id="form-new">&lt;!-- HubSpot Form (New Format) --&gt;
+&lt;script src="https://js-na2.hsforms.net/forms/embed/242518594.js" defer&gt;&lt;/script&gt;
+&lt;div class="hs-form-frame" data-region="na2" data-form-id="YOUR-FORM-ID" data-portal-id="242518594"&gt;&lt;/div&gt;
+
+&lt;!-- Refersion Integration Script (choose one) --&gt;
+&lt;!-- Option 1: From your uploaded file --&gt;
+&lt;script src="/s/hubspot-integration-v2.js"&gt;&lt;/script&gt;
+
+&lt;!-- Option 2: From our CDN (easier) --&gt;
+&lt;script src="https://refersion.vercel.app/src/hubspot-integration-v2.js"&gt;&lt;/script&gt;</code></pre>
+      </div>
+
+      <div class="info">
+        <strong>ℹ️ Note:</strong> The new format automatically handles form population. Just ensure you've uploaded the <code>hubspot-integration-v2.js</code> file to your Squarespace site.
+      </div>
+
+      <h3>Option B: Traditional HubSpot Forms API</h3>
+      <p>For more control over form behavior:</p>
+      
       <div class="code-container">
         <button class="copy-button" onclick="copyCode('form-api')">Copy</button>
         <pre><code id="form-api">&lt;!-- HubSpot Form Container --&gt;
@@ -299,7 +367,7 @@ hbspt.forms.create({
 &lt;/script&gt;</code></pre>
       </div>
 
-      <h3>Option B: For Existing Embedded Forms</h3>
+      <h3>Option C: For Existing Embedded Forms</h3>
       <p>
         If you already have HubSpot forms embedded, add this script after the
         form:

@@ -1,12 +1,16 @@
 {
   "buildCommand": "echo 'No build required'",
-  "outputDirectory": ".",
+  "outputDirectory": "demo",
   "framework": null,
   "cleanUrls": true,
   "rewrites": [
     {
       "source": "/",
       "destination": "/index.html"
+    },
+    {
+      "source": "/src/:path*",
+      "destination": "/../src/:path*"
     }
   ],
   "headers": [
@@ -24,6 +28,27 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/src/(.*).js",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
         }
       ]
     }

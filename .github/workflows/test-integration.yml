@@ -36,7 +36,7 @@ jobs:
         
     - name: Run quick test
       run: |
-        node test-loop-quick.js
+        node tests/test-loop-quick.js
         
     - name: Upload test results
       if: always()

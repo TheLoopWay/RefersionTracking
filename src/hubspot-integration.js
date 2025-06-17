@@ -69,13 +69,26 @@
                 };
                 
                 // Store in multiple places for redundancy
-                localStorage.setItem('rfsn', trackingData.affiliateId);
-                localStorage.setItem('rfsn_timestamp', trackingData.timestamp);
-                localStorage.setItem('rfsn_source_url', trackingData.sourceUrl);
                 
-                // Also set cookies as backup
-                utils.setCookie('rfsn', trackingData.affiliateId, CONFIG.cookieDays);
-                utils.setCookie('rfsn_timestamp', trackingData.timestamp, CONFIG.cookieDays);
+                // 1. Store in localStorage
+                try {
+                    localStorage.setItem('rfsn', trackingData.affiliateId);
+                    localStorage.setItem('rfsn_timestamp', trackingData.timestamp);
+                    localStorage.setItem('rfsn_source_url', trackingData.sourceUrl);
+                    utils.log('Stored in localStorage');
+                } catch (e) {
+                    utils.log('localStorage not available', e);
+                }
+                
+                // 2. Also set cookies as backup
+                try {
+                    utils.setCookie('rfsn', trackingData.affiliateId, CONFIG.cookieDays);
+                    utils.setCookie('rfsn_timestamp', trackingData.timestamp, CONFIG.cookieDays);
+                    utils.setCookie('rfsn_source_url', trackingData.sourceUrl, CONFIG.cookieDays);
+                    utils.log('Stored in cookies');
+                } catch (e) {
+                    utils.log('Cookie storage failed', e);
+                }
                 
                 utils.log('New referral captured:', trackingData);
                 return trackingData;
@@ -130,10 +143,29 @@
             ];
             
             fields.forEach(field => {
-                const input = form.querySelector(`input[name="${field.name}"]`);
+                // Try multiple selectors to handle HubSpot's prefixed names
+                const selectors = [
+                    `input[name="${field.name}"]`,
+                    `input[name$="/${field.name}"]`, // Matches "0-1/refersionid"
+                    `input[name*="${field.name}"]`
+                ];
+                
+                let input = null;
+                for (const selector of selectors) {
+                    input = form.querySelector(selector);
+                    if (input) break;
+                }
+                
                 if (input) {
                     input.value = field.value;
-                    utils.log(`Set field ${field.name} to:`, field.value);
+                    // For hidden fields, also set attribute
+                    if (input.type === 'hidden') {
+                        input.setAttribute('value', field.value);
+                    }
+                    // Trigger events to ensure HubSpot registers the change
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    utils.log(`Set field ${field.name} to: ${field.value} (found as ${input.name})`);
                 } else {
                     // Create hidden field if it doesn't exist
                     const hiddenInput = document.createElement('input');

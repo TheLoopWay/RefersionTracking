@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New HubSpot Form Format Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .test-links {
+            margin: 20px 0;
+        }
+        .test-links a {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 20px;
+            background: #2196f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .test-links a:hover {
+            background: #1976d2;
+        }
+        .form-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>New HubSpot Form Format Test</h1>
+        
+        <div class="info-box">
+            <strong>Testing the new HubSpot form embed format</strong><br>
+            This uses the data-attribute based form embedding instead of JavaScript API.
+        </div>
+
+        <div class="test-links">
+            <strong>Test with tracking:</strong><br>
+            <a href="?rfsn=TEST123">Test with TEST123</a>
+            <a href="?rfsn=DEMO456">Test with DEMO456</a>
+            <a href="/">Clear URL</a>
+        </div>
+
+        <div class="status" id="tracking-status">
+            Checking tracking status...
+        </div>
+
+        <div class="form-container">
+            <h2>HubSpot Form (New Format)</h2>
+            
+            <!-- New HubSpot form embed format -->
+            <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
+            <script>
+              hbspt.forms.create({
+                region: "na2",
+                portalId: "242518594",
+                formId: "09ab75f6-bfbc-4d1c-8761-9ff764b650ca",
+                onFormReady: function($form) {
+                    console.log('[HubSpot] Form ready', $form);
+                    
+                    // Check if we have tracking data
+                    const trackingData = window.RefersionHubSpot && window.RefersionHubSpot.getTrackingData 
+                        ? window.RefersionHubSpot.getTrackingData() 
+                        : null;
+                    
+                    if (trackingData) {
+                        console.log('[HubSpot] Populating with tracking data:', trackingData);
+                        
+                        // Try to populate fields
+                        const fields = {
+                            'refersionid': trackingData.rfsn,
+                            'refersion_timestamp': trackingData.timestamp,
+                            'refersion_source_url': trackingData.sourceUrl
+                        };
+                        
+                        Object.entries(fields).forEach(([name, value]) => {
+                            const $input = $form.find(`input[name="${name}"]`);
+                            if ($input.length) {
+                                $input.val(value).trigger('change');
+                                console.log(`[HubSpot] Set ${name} to ${value}`);
+                            } else {
+                                console.warn(`[HubSpot] Field ${name} not found`);
+                            }
+                        });
+                    }
+                },
+                onFormSubmit: function($form) {
+                    console.log('[HubSpot] Form submitted');
+                },
+                onFormSubmitted: function() {
+                    console.log('[HubSpot] Form submission complete');
+                    alert('Form submitted successfully with tracking data!');
+                }
+              });
+            </script>
+
+            <!-- Alternative: Using the exact format you provided -->
+            <div style="margin-top: 40px; padding-top: 40px; border-top: 2px dashed #ddd;">
+                <h3>Alternative Form (Your Exact Code)</h3>
+                <script src="https://js-na2.hsforms.net/forms/embed/242518594.js" defer></script>
+                <div class="hs-form-frame" data-region="na2" data-form-id="09ab75f6-bfbc-4d1c-8761-9ff764b650ca" data-portal-id="242518594"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include our integration script -->
+    <script src="https://refersion.vercel.app/src/hubspot-integration.js"></script>
+    
+    <script>
+        // Update status display
+        function updateStatus() {
+            const statusEl = document.getElementById('tracking-status');
+            
+            if (window.RefersionHubSpot && window.RefersionHubSpot.getTrackingData) {
+                const data = window.RefersionHubSpot.getTrackingData();
+                if (data) {
+                    statusEl.innerHTML = `
+                        <strong>✅ Tracking Active</strong><br>
+                        Affiliate ID: ${data.rfsn}<br>
+                        Captured: ${new Date(data.timestamp).toLocaleString()}<br>
+                        Source: ${data.sourceUrl}
+                    `;
+                    statusEl.style.background = '#e8f5e9';
+                    statusEl.style.borderLeft = '4px solid #4caf50';
+                } else {
+                    statusEl.innerHTML = '❌ No tracking data found';
+                    statusEl.style.background = '#ffebee';
+                    statusEl.style.borderLeft = '4px solid #f44336';
+                }
+            } else {
+                statusEl.innerHTML = '⚠️ Integration script not loaded';
+                statusEl.style.background = '#fff3e0';
+                statusEl.style.borderLeft = '4px solid #ff9800';
+            }
+        }
+        
+        // Check status on load
+        window.addEventListener('load', function() {
+            setTimeout(updateStatus, 1000);
+        });
+        
+        // Listen for tracking updates
+        window.addEventListener('refersion:tracking:captured', updateStatus);
+    </script>
+</body>
+</html>

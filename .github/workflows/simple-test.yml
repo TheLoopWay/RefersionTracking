@@ -21,7 +21,7 @@ jobs:
         node-version: '18'
         
     - name: Quick connectivity test
-      run: node test-loop-quick.js
+      run: node tests/test-loop-quick.js
       continue-on-error: true
         
     - name: Install dependencies
