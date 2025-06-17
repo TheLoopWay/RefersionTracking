@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   root: './forms',
+  publicDir: '../public',
   build: {
     outDir: '../dist',
     emptyOutDir: true,
@@ -10,7 +16,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'forms/index.html'),
         peptideInquiry: resolve(__dirname, 'forms/peptide-inquiry.html'),
-        embed: resolve(__dirname, 'public/embed.js')
+        consultation: resolve(__dirname, 'forms/consultation.html')
       }
     }
   },

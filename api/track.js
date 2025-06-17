@@ -2,9 +2,7 @@
  * Edge function for server-side tracking backup
  */
 
-export const config = {
-  runtime: 'edge',
-};
+export const runtime = 'edge';
 
 export default async function handler(request) {
   // Handle CORS
