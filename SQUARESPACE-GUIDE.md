@@ -39,6 +39,19 @@ Navigate to the Squarespace page where you want the form.
 3. Make sure it says "Code Block" at the top
 
 ### Step 3: Paste the FORM EMBED CODE
+
+**Option A: Simple Iframe (If JavaScript is blocked)**
+```html
+<iframe 
+  src="https://forms.theloopway.com/peptide-inquiry.html" 
+  width="100%" 
+  height="1200" 
+  frameborder="0" 
+  style="border: none;">
+</iframe>
+```
+
+**Option B: JavaScript Embed (If allowed)**
 ```html
 <div id="loop-form"></div>
 <script src="https://forms.theloopway.com/embed.js" data-form="peptide-inquiry"></script>
