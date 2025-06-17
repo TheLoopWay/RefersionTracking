@@ -7,10 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "check-form": "node scripts/check-form.js"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
-    "vercel": "^32.0.0"
+    "vercel": "^32.0.0",
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0"
   }
 }
