@@ -1,0 +1,131 @@
+/**
+ * Form Handler Module
+ * Manages form submissions to HubSpot with tracking
+ */
+
+import { tracker } from './tracking.js';
+
+export class FormHandler {
+  constructor(config) {
+    this.portalId = config.portalId;
+    this.formId = config.formId;
+    this.form = document.getElementById(config.formElementId);
+    this.submitButton = this.form?.querySelector('button[type="submit"]');
+    this.messageDiv = document.getElementById(config.messageElementId || 'form-message');
+    
+    if (this.form) {
+      this.init();
+    }
+  }
+
+  init() {
+    // Initialize tracking
+    tracker.init();
+    
+    // Handle form submission
+    this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+  }
+
+  async handleSubmit(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    this.setLoading(true);
+    
+    try {
+      const formData = new FormData(this.form);
+      const fields = this.prepareFields(formData);
+      
+      const response = await this.submitToHubSpot(fields);
+      
+      if (response.ok) {
+        this.showSuccess();
+        this.form.reset();
+        
+        // Optional redirect
+        if (this.form.dataset.redirectUrl) {
+          setTimeout(() => {
+            window.location.href = this.form.dataset.redirectUrl;
+          }, 2000);
+        }
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      this.showError();
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  prepareFields(formData) {
+    const fields = [];
+    
+    // Add form fields
+    for (const [name, value] of formData.entries()) {
+      fields.push({ name, value: value.toString() });
+    }
+    
+    // Add tracking data
+    const trackingData = tracker.getFormData();
+    Object.entries(trackingData).forEach(([name, value]) => {
+      if (value) {
+        fields.push({ name, value: value.toString() });
+      }
+    });
+    
+    return fields;
+  }
+
+  async submitToHubSpot(fields) {
+    const hubspotCookie = this.getCookie('hubspotutk');
+    
+    return await fetch(
+      `https://api.hsforms.com/submissions/v3/integration/submit/${this.portalId}/${this.formId}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          submittedAt: Date.now(),
+          fields: fields,
+          context: {
+            hutk: hubspotCookie,
+            pageUri: window.location.href,
+            pageName: document.title
+          }
+        })
+      }
+    );
+  }
+
+  getCookie(name) {
+    const match = document.cookie.match(new RegExp(`${name}=([^;]+)`));
+    return match ? match[1] : null;
+  }
+
+  setLoading(loading) {
+    if (this.submitButton) {
+      this.submitButton.disabled = loading;
+      this.submitButton.textContent = loading ? 'Submitting...' : 'Submit';
+    }
+  }
+
+  showSuccess() {
+    if (this.messageDiv) {
+      this.messageDiv.className = 'form-message success';
+      this.messageDiv.textContent = 'Thank you! Your submission has been received.';
+      this.messageDiv.style.display = 'block';
+    }
+  }
+
+  showError() {
+    if (this.messageDiv) {
+      this.messageDiv.className = 'form-message error';
+      this.messageDiv.textContent = 'Sorry, there was an error. Please try again.';
+      this.messageDiv.style.display = 'block';
+    }
+  }
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Consultation - LOOP</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="form-container">
+    <div class="form-logo">
+      <img src="https://242518594.fs1.hubspotusercontent-na2.net/hubfs/242518594/LOOP%20250%20wide-3.png" alt="LOOP" />
+    </div>
+    
+    <div class="form-header">
+      <h1 class="form-title">Schedule Your Free Consultation</h1>
+      <p class="form-description">
+        Let's discuss your wellness goals and how LOOP can support your journey.
+      </p>
+    </div>
+    
+    <form id="consultation-form">
+      <div class="form-fields">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstname">First Name<span class="required">*</span></label>
+            <input type="text" id="firstname" name="firstname" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="lastname">Last Name<span class="required">*</span></label>
+            <input type="text" id="lastname" name="lastname" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email<span class="required">*</span></label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="preferred_time">Preferred Contact Time</label>
+            <select id="preferred_time" name="preferred_time">
+              <option value="">Select a time</option>
+              <option value="morning">Morning (9am-12pm PST)</option>
+              <option value="afternoon">Afternoon (12pm-5pm PST)</option>
+              <option value="evening">Evening (5pm-8pm PST)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="consultation_type">Consultation Type</label>
+            <select id="consultation_type" name="consultation_type">
+              <option value="">Select type</option>
+              <option value="peptides">Peptide Education</option>
+              <option value="wellness">General Wellness</option>
+              <option value="labs">Lab Results Review</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="message">Tell us about your goals</label>
+            <textarea id="message" name="message" rows="4" 
+                      placeholder="What would you like to discuss during your consultation?"></textarea>
+          </div>
+        </div>
+      </div>
+      
+      <button type="submit" class="submit-button">Request Consultation</button>
+      
+      <div id="form-message" class="form-message"></div>
+    </form>
+  </div>
+
+  <!-- Refersion Tracking Pixel -->
+  <script src="https://www.refersion.com/conversion/w00hw4"></script>
+  
+  <!-- Form Handler -->
+  <script type="module">
+    import { FormHandler } from '/js/forms.js';
+    import '/js/iframe-resize.js';
+    
+    // TODO: Replace with your actual HubSpot form ID
+    new FormHandler({
+      portalId: '242518594',
+      formId: 'YOUR-CONSULTATION-FORM-ID', // <-- Replace this
+      formElementId: 'consultation-form',
+      messageElementId: 'form-message'
+    });
+  </script>
+</body>
+</html>
