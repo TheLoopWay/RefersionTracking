@@ -43,11 +43,21 @@
     if (!rfsn) return;
     
     // Method 1: URL parameter injection
-    // If your meeting link supports custom fields, add to URL
-    const meetingLinks = document.querySelectorAll('a[href*="meetings.hubspot.com"], a[href*="meetings.hubspotpagebuilder.com"]');
+    // Update meeting container URLs to include tracking
+    const meetingContainers = document.querySelectorAll('.meetings-iframe-container[data-src]');
+    meetingContainers.forEach(container => {
+      const src = container.getAttribute('data-src');
+      if (src && src.includes('hubspot.com')) {
+        const url = new URL(src);
+        url.searchParams.set('refersionid', rfsn);
+        container.setAttribute('data-src', url.toString());
+      }
+    });
+    
+    // Also handle direct meeting links
+    const meetingLinks = document.querySelectorAll('a[href*="meetings.hubspot.com"], a[href*="meetings-na2.hubspot.com"], a[href*="meetings.hubspotpagebuilder.com"]');
     meetingLinks.forEach(link => {
       const url = new URL(link.href);
-      // Add as custom property
       url.searchParams.set('refersionid', rfsn);
       link.href = url.toString();
     });
@@ -95,12 +105,15 @@
     }
   }
   
-  // Run immediately
+  // Run immediately to catch containers before HubSpot script
   injectTracking();
   
   // Also run when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', injectTracking);
+  } else {
+    // DOM already loaded, run again to be safe
+    setTimeout(injectTracking, 0);
   }
   
   // Watch for dynamically added meeting links
