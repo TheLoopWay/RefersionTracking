@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You - LOOP</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .thank-you-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    
+    .thank-you-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #51cf66 0%, #42b556 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px;
+      box-shadow: 0 4px 20px rgba(81, 207, 102, 0.3);
+    }
+    
+    .thank-you-icon::after {
+      content: '✓';
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+    }
+    
+    .thank-you-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 24px;
+    }
+    
+    .thank-you-content {
+      font-size: 18px;
+      line-height: 1.8;
+      color: #666;
+      margin-bottom: 32px;
+    }
+    
+    .thank-you-content p {
+      margin-bottom: 20px;
+    }
+    
+    .team-signature {
+      font-style: italic;
+      color: #4a90e2;
+      font-weight: 500;
+      margin: 30px 0;
+    }
+    
+    .upload-section {
+      background: #f5f9ff;
+      padding: 30px;
+      border-radius: 12px;
+      margin-top: 40px;
+      border: 2px solid #e3f0ff;
+    }
+    
+    .upload-section p {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .upload-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+      color: white;
+      padding: 14px 40px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    }
+    
+    .upload-button:hover {
+      background: linear-gradient(135deg, #357abd 0%, #2968a8 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    }
+    
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(to right, #4a90e2, #51cf66);
+      margin: 30px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="form-logo">
+      <img src="https://242518594.fs1.hubspotusercontent-na2.net/hubfs/242518594/LOOP%20250%20wide-3.png" alt="LOOP" />
+    </div>
+    
+    <div class="thank-you-container">
+      <div class="thank-you-icon"></div>
+      
+      <h1 class="thank-you-title">Form Submitted — You're In!</h1>
+      
+      <div class="thank-you-content">
+        <p>Thank you for submitting your intake form. We've received your information and will be in touch shortly with your personalized next steps.</p>
+        
+        <p>If you indicated that you have bloodwork ready, keep an eye out for instructions on how to securely upload it. If not, no worries — we'll guide you through what's needed.</p>
+        
+        <p>This is the first step in understanding your body in a whole new way. We're excited to support you on this journey.</p>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <p class="team-signature">— The LOOP Way Team</p>
+      
+      <div class="upload-section">
+        <p><strong>If you have your bloodwork ready you may upload it here:</strong></p>
+        <a href="https://share-na2.hsforms.com/21OCEgsupTXyVBuLm3MSx9g40e0jm" class="upload-button" target="_blank">Upload Bloodwork</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Refersion Tracking Pixel -->
+  <img src="https://refersion.com/tracker/v4/pub_ee6ba2b9f9295e53f4eb.gif" style="display:none;" />
+  
+  <script type="module">
+    import { tracker } from '/js/tracking.js';
+    
+    // Initialize tracking for thank you page
+    tracker.init();
+    
+    // Track conversion if there's a referral
+    const trackingData = tracker.getFormData();
+    if (trackingData.refersionid && window.r && typeof window.r === 'function') {
+      window.r('conversion', {
+        affiliateId: trackingData.refersionid,
+        orderId: 'intake-' + Date.now(),
+        amount: 0,
+        currency: 'USD'
+      });
+    }
+  </script>
+</body>
+</html>

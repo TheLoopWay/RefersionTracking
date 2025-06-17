@@ -17,7 +17,8 @@ export default defineConfig({
         main: resolve(__dirname, 'forms/index.html'),
         peptideInquiry: resolve(__dirname, 'forms/peptide-inquiry.html'),
         consultation: resolve(__dirname, 'forms/consultation.html'),
-        peptideEducationIntake: resolve(__dirname, 'forms/peptide-education-intake.html')
+        peptideEducationIntake: resolve(__dirname, 'forms/peptide-education-intake.html'),
+        thankYouIntake: resolve(__dirname, 'forms/thank-you-intake.html')
       }
     }
   },

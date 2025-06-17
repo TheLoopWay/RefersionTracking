@@ -498,12 +498,13 @@
       });
     });
     
-    // Initialize form handler
+    // Initialize form handler with redirect
     const formHandler = new FormHandler({
       portalId: '242518594',
       formId: '61fbcc93-22ef-4b3b-bc45-48f5a8737e47', // You'll need to create this form in HubSpot
       formElementId: 'peptide-intake-form',
-      messageElementId: 'form-message'
+      messageElementId: 'form-message',
+      redirectUrl: '/thank-you-intake.html'
     });
   </script>
 </body>

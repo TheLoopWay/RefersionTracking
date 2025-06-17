@@ -12,6 +12,7 @@ export class FormHandler {
     this.form = document.getElementById(config.formElementId);
     this.submitButton = this.form?.querySelector('button[type="submit"]');
     this.messageDiv = document.getElementById(config.messageElementId || 'form-message');
+    this.redirectUrl = config.redirectUrl;
     
     if (this.form) {
       this.init();
@@ -46,10 +47,11 @@ export class FormHandler {
         this.trackConversion();
         
         // Optional redirect
-        if (this.form.dataset.redirectUrl) {
+        if (this.redirectUrl || this.form.dataset.redirectUrl) {
+          const redirectTo = this.redirectUrl || this.form.dataset.redirectUrl;
           setTimeout(() => {
-            window.location.href = this.form.dataset.redirectUrl;
-          }, 2000);
+            window.location.href = redirectTo;
+          }, 1500);
         }
       } else {
         throw new Error('Submission failed');
