@@ -42,6 +42,9 @@ export class FormHandler {
         this.showSuccess();
         this.form.reset();
         
+        // Track conversion with Refersion
+        this.trackConversion();
+        
         // Optional redirect
         if (this.form.dataset.redirectUrl) {
           setTimeout(() => {
@@ -118,6 +121,9 @@ export class FormHandler {
       this.messageDiv.className = 'form-message success';
       this.messageDiv.textContent = 'Thank you! Your submission has been received.';
       this.messageDiv.style.display = 'block';
+      
+      // Scroll to top to show the success message
+      this.messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 
@@ -126,6 +132,24 @@ export class FormHandler {
       this.messageDiv.className = 'form-message error';
       this.messageDiv.textContent = 'Sorry, there was an error. Please try again.';
       this.messageDiv.style.display = 'block';
+    }
+  }
+
+  trackConversion() {
+    // Track conversion with Refersion
+    if (window.r && typeof window.r === 'function') {
+      // Get tracking data to include affiliate ID
+      const trackingData = tracker.getFormData();
+      if (trackingData.refersionid) {
+        // Track the conversion
+        window.r('conversion', {
+          affiliateId: trackingData.refersionid,
+          orderId: 'form-' + Date.now(), // Unique ID for this submission
+          amount: 0, // No monetary value for form submission
+          currency: 'USD'
+        });
+        console.log('Refersion conversion tracked for affiliate:', trackingData.refersionid);
+      }
     }
   }
 }
