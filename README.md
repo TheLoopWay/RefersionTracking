@@ -29,11 +29,17 @@ npm run deploy
 
 ## Installation Guide
 
+### ⚠️ IMPORTANT: Understand the Two Scripts
+
+**Before installing**, read [SCRIPTS-EXPLAINED.md](SCRIPTS-EXPLAINED.md) to understand:
+- 📋 **Form Embed Script** - Shows the actual form (required)
+- 🌐 **Global Tracking Script** - Captures tracking site-wide (optional)
+
 ### For Squarespace (TheLoopWay.com & LoopBioLabs.com)
 
 1. **Go to your Squarespace page** where you want the form
-2. **Add a Code Block** (not Code Injection)
-3. **Paste this code**:
+2. **Add a Code Block** (NOT Code Injection!)
+3. **Paste the FORM EMBED code**:
 
 ```html
 <div id="loop-form"></div>
@@ -43,7 +49,7 @@ npm run deploy
 That's it! The form will:
 - Load in an iframe (no script conflicts)
 - Auto-resize to fit content
-- Track Refersion affiliates
+- Track Refersion affiliates automatically
 - Submit to HubSpot with proper form ID
 
 ### Advanced Options
@@ -145,6 +151,7 @@ The tracking works cross-domain, so affiliates are tracked even when the form is
 
 ## Documentation
 
+- [SCRIPTS EXPLAINED](SCRIPTS-EXPLAINED.md) - **READ THIS FIRST!** Visual guide to the two scripts
 - [Installation Guide](INSTALLATION.md) - Detailed setup instructions
 - [Squarespace Guide](SQUARESPACE-GUIDE.md) - Quick start for Squarespace
 - [CLAUDE.md](CLAUDE.md) - AI assistant documentation
