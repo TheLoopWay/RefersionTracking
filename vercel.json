@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && cp public/embed.js dist/",
   "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
@@ -12,11 +12,6 @@
       "destination": "/api/track.js"
     }
   ],
-  "functions": {
-    "api/track.js": {
-      "runtime": "edge"
-    }
-  },
   "headers": [
     {
       "source": "/embed.js",
