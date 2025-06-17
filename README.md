@@ -1,187 +1,154 @@
-# Refersion + HubSpot Integration
+# LOOP Forms Platform
 
-A lightweight JavaScript integration that captures Refersion affiliate tracking parameters and automatically populates HubSpot forms with referral data.
+A lightweight, deployable forms platform with built-in Refersion affiliate tracking. Works on all LOOP properties including TheLoopWay.com and LoopBioLabs.com.
 
-## 🎯 Purpose
+## Features
 
-This integration enables seamless tracking of affiliate referrals from Refersion into HubSpot, allowing you to:
-- Track which affiliates are driving form submissions
-- Attribute leads and customers to specific referral partners
-- Maintain referral data across multiple page visits
+- 🚀 Fast, lightweight forms (Vite + Vanilla JS)
+- 📊 Automatic Refersion tracking integration
+- 🔒 Server-side cookie backup (Vercel Edge Functions)
+- 📱 Responsive, embeddable forms
+- 🎨 Clean, customizable design
+- 🌐 Multi-site support
 
-## 📁 Project Structure
+## Quick Start
 
-```
-refersion/
-├── src/                      # Source code
-│   └── hubspot-integration.js    # Main integration script
-├── demo/                     # Demo and examples
-│   ├── index.html               # Interactive demo page
-│   ├── style.css                # Demo styles
-│   ├── server.js                # Local development server
-│   └── squarespace-embed-guide.html  # Squarespace implementation guide
-├── tests/                    # Test scripts
-│   ├── test-theloopway.js       # TheLoopWay.com specific tests
-│   ├── test-loop-quick.js       # Quick connectivity test
-│   ├── test-integration.js      # Generic integration test
-│   ├── test-integration-puppeteer.js  # Browser automation tests
-│   └── test-page.html           # Manual test page
-├── docs/                     # Documentation
-│   ├── DEPLOY.md                # Deployment instructions
-│   ├── TEST-GUIDE.md            # Testing guide
-│   └── README-GITHUB-ACTIONS.md # CI/CD documentation
-├── .github/workflows/        # GitHub Actions
-│   ├── simple-test.yml          # Basic test workflow
-│   └── test-integration.yml     # Comprehensive test workflow
-├── package.json             # Node.js dependencies
-├── vercel.json             # Vercel deployment config
-└── CLAUDE.md               # AI assistant context
-```
-
-## 🚀 Quick Start
-
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/refersion-hubspot-integration.git
-cd refersion-hubspot-integration
-```
-
-2. Install dependencies (for testing):
-```bash
+# Install dependencies
 npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Deploy to Vercel
+npm run deploy
 ```
 
-3. Run the demo:
-```bash
-npm start
-```
+## Installation Guide
 
-Visit http://localhost:3000 to see the integration in action.
+### For Squarespace (TheLoopWay.com & LoopBioLabs.com)
 
-## 🔧 Implementation
+1. **Go to your Squarespace page** where you want the form
+2. **Add a Code Block** (not Code Injection)
+3. **Paste this code**:
 
-### For Squarespace
-
-1. **Upload the integration script**:
-   - Use `src/hubspot-integration-v2.js` for best compatibility with new HubSpot forms
-   - Or use `src/hubspot-integration.js` for the original version
-   - Upload to Settings > Advanced > Developer Tools
-
-2. **Add Refersion tracking** (if not already present):
 ```html
-<script>
-  (function(a,b,c,d,e,f,g){e['refersion']=c;e[c]=e[c]||function(){(e[c].q=e[c].q||[]).push(arguments)};f=b.createElement(a);g=b.getElementsByTagName(a)[0];f.async=1;f.src=d;g.parentNode.insertBefore(f,g)}('script',document,'r','https://cdn.refersion.com/refersion.js');
-  r("pubkey", "YOUR-REFERSION-PUBLIC-KEY");
+<div id="loop-form"></div>
+<script src="https://forms.theloopway.com/embed.js" data-form="peptide-inquiry"></script>
+```
+
+That's it! The form will:
+- Load in an iframe (no script conflicts)
+- Auto-resize to fit content
+- Track Refersion affiliates
+- Submit to HubSpot with proper form ID
+
+### Advanced Options
+
+```html
+<!-- Custom container ID -->
+<div id="my-custom-form"></div>
+<script src="https://forms.theloopway.com/embed.js" 
+        data-form="peptide-inquiry"
+        data-container="my-custom-form">
 </script>
+
+<!-- Different forms -->
+<script src="https://forms.theloopway.com/embed.js" data-form="consultation"></script>
+<script src="https://forms.theloopway.com/embed.js" data-form="contact"></script>
 ```
 
-3. **Include the integration script**:
-   - Add to Settings > Advanced > Code Injection > Header:
-```html
-<script src="/s/hubspot-integration-v2.js"></script>
+## Creating New Forms
+
+1. Copy `forms/peptide-inquiry.html` as a template
+2. Update the form fields and HubSpot form ID
+3. Deploy to see changes live
+
+## How Tracking Works
+
+1. **URL Parameters**: Captures `?rfsn=XXXXX` from the parent page URL
+2. **Cross-Domain**: Works even when form is on different domain
+3. **Multi-Storage**: Saves to cookies and localStorage  
+4. **Server Backup**: Sends to edge function (optional)
+5. **Form Integration**: Automatically adds to HubSpot submissions
+
+### Example Flow
+```
+User visits: theloopway.com/page?rfsn=ABC123
+             ↓
+Embed script captures tracking
+             ↓
+Form loads with tracking preserved
+             ↓
+Submission includes refersionid: ABC123
 ```
 
-4. **Configure HubSpot forms** to include these hidden fields:
-   - `refersionid` - The affiliate ID
-   - `refersion_timestamp` - When the referral was captured
-   - `refersion_source_url` - The landing page URL
+## Project Structure
 
-### For Other Platforms
-
-Include the integration script after your Refersion tracking code:
-
-**Option 1: From CDN (Easiest)**
-```html
-<script src="https://refersion.vercel.app/src/hubspot-integration-v2.js"></script>
+```
+├── forms/              # Form pages
+│   ├── css/           # Styles
+│   ├── js/            # Form logic & tracking
+│   └── *.html         # Individual forms
+├── public/            # Static assets
+│   └── embed.js       # Embeddable script
+├── api/               # Vercel edge functions
+│   └── track.js       # Server-side tracking
+└── vercel.json        # Deployment config
 ```
 
-**Option 2: Self-hosted**
-```html
-<script src="path/to/hubspot-integration-v2.js"></script>
-```
+## Deployment
 
-## 🧪 Testing
+The platform is configured to deploy to `forms.theloopway.com`:
 
-### Quick Test (No Browser)
-```bash
-npm run test:loop:quick
-```
+1. Push to main branch
+2. Vercel auto-deploys
+3. Forms are available at `forms.theloopway.com/[form-name].html`
 
-### Full Browser Test
-```bash
-npm run test:loop
-```
+## HubSpot Configuration
 
-### Run All Tests
-```bash
-npm test
-```
+Each form needs:
+- Portal ID: `242518594`
+- Form ID: Get from HubSpot
+- Custom properties: `refersionid`, `refersion_timestamp`, `refersion_source_url`
 
-See [docs/TEST-GUIDE.md](docs/TEST-GUIDE.md) for detailed testing instructions.
+## Multi-Site Support
 
-## 📦 Deployment
+This platform works seamlessly across all LOOP properties:
 
-The project is configured for easy deployment to:
-- **Vercel** (recommended) - `vercel.json` included
-- **Any static hosting** - Upload contents of `src/` and configure paths
-- **CDN** - Host `hubspot-integration.js` and reference via URL
+- **TheLoopWay.com** - Main site
+- **LoopBioLabs.com** - E-commerce site  
+- **Any other domain** - Just embed and go
 
-See [docs/DEPLOY.md](docs/DEPLOY.md) for detailed deployment instructions.
+The tracking works cross-domain, so affiliates are tracked even when the form is hosted on a different domain.
 
-## 🔍 How It Works
+## Creating New Forms
 
-1. **Captures** - Detects `?rfsn=XXXXX` parameters in URLs
-2. **Stores** - Saves data in BOTH localStorage AND cookies for maximum reliability
-3. **Persists** - Maintains tracking for 30 days
-4. **Populates** - Automatically fills HubSpot form fields
-5. **Tracks** - Attributes form submissions to affiliates
+1. **Copy a template**:
+   ```bash
+   cp forms/peptide-inquiry.html forms/my-new-form.html
+   ```
 
-### Storage Redundancy
+2. **Update the form**:
+   - Change form fields
+   - Update text content
+   - Replace the HubSpot form ID
 
-The integration uses dual storage for reliability:
-- **Primary**: localStorage (faster, more storage)
-- **Backup**: Cookies (works in more restrictive environments)
+3. **Embed on any site**:
+   ```html
+   <div id="loop-form"></div>
+   <script src="https://forms.theloopway.com/embed.js" data-form="my-new-form"></script>
+   ```
 
-This ensures tracking works even if:
-- localStorage is disabled
-- Cookies are blocked (falls back to localStorage)
-- User switches between HTTP/HTTPS
-- Site has strict privacy settings
+## Documentation
 
-## 📝 HubSpot Form Compatibility
+- [Installation Guide](INSTALLATION.md) - Detailed setup instructions
+- [Squarespace Guide](SQUARESPACE-GUIDE.md) - Quick start for Squarespace
+- [CLAUDE.md](CLAUDE.md) - AI assistant documentation
 
-The integration supports both HubSpot form formats:
+## Support
 
-### New Embed Format (v2 recommended)
-```html
-<script src="https://js-na2.hsforms.net/forms/embed/242518594.js" defer></script>
-<div class="hs-form-frame" data-region="na2" data-form-id="YOUR-FORM-ID" data-portal-id="242518594"></div>
-```
-
-### Traditional API Format
-```javascript
-hbspt.forms.create({
-    region: "na2",
-    portalId: "242518594",
-    formId: "YOUR-FORM-ID"
-});
-```
-
-## 🛠️ Configuration
-
-Edit `src/hubspot-integration.js` to customize:
-- Storage duration (default: 30 days)
-- Field mappings
-- Debug logging
-
-## 🤝 Support
-
-- Create an issue for bugs or feature requests
-- See [docs/](docs/) for additional documentation
-- Check [tests/](tests/) for implementation examples
-
-## 📄 License
-
-This project is provided as-is for use with Refersion and HubSpot services.
+For issues or questions, contact LOOP support.

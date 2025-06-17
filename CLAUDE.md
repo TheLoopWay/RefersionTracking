@@ -1,75 +1,54 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with the LOOP Forms Platform.
 
 ## Project Overview
 
-This is a JavaScript integration tool that captures Refersion affiliate tracking parameters and automatically populates HubSpot forms. It's designed for easy implementation on Squarespace sites.
+This is a lightweight forms platform built with Vite and vanilla JavaScript that:
+- Hosts forms at forms.theloopway.com
+- Provides embeddable forms for Squarespace and other sites
+- Automatically tracks Refersion affiliate data
+- Submits forms to HubSpot with tracking included
 
-## Commands
+## Key Technologies
 
-```bash
-# Install dependencies
-npm install
+- **Build Tool**: Vite
+- **Language**: Vanilla JavaScript (ES6 modules)
+- **Deployment**: Vercel with Edge Functions
+- **Form Backend**: HubSpot Forms API v3
+- **Tracking**: Refersion affiliate tracking
 
-# Run development server (port 3000)
-npm start
+## Important Files
 
-# Deploy to Vercel
-vercel
-```
+- `forms/peptide-inquiry.html` - Example form template
+- `forms/js/tracking.js` - Refersion tracking logic
+- `forms/js/forms.js` - Form submission handler
+- `public/embed.js` - Embeddable script for external sites
+- `api/track.js` - Vercel edge function for server-side tracking
 
-## Architecture
+## Common Tasks
 
-### Core Integration Logic
-The entire integration is contained in `hubspot-integration.js`. This script:
-1. Captures Refersion parameters from URL (`?rfsn=XXXXX`)
-2. Stores data redundantly in localStorage and cookies
-3. Automatically populates HubSpot form fields when forms are detected
-4. Uses multiple detection methods (DOM events, MutationObserver) for reliability
+### Creating a New Form
+1. Copy `forms/peptide-inquiry.html` to `forms/new-form.html`
+2. Update the form fields and content
+3. Change the HubSpot form ID in the script section
+4. Test locally with `npm run dev`
 
-### Key Implementation Details
-
-**Form Field Mapping:**
-- `refersionid` - The affiliate ID from URL parameter
-- `refersion_timestamp` - ISO timestamp when captured
-- `refersion_source_url` - Full URL where tracking was captured
-
-**Data Persistence:**
-- Primary: localStorage with 30-day expiration
-- Fallback: Browser cookies with same expiration
-- Cross-session tracking maintained
-
-**Form Detection:**
-- Works with both HubSpot iframe embeds and API-loaded forms
-- Uses event listeners for `message` events from HubSpot iframes
-- MutationObserver watches for dynamically loaded forms
-- Multiple retry mechanisms for reliability
-
-### Configuration
-
-Replace placeholder values in `hubspot-integration.js`:
-- `YOUR-REFERSION-PUBLIC-KEY` with actual Refersion API key
-
-Current HubSpot configuration:
-- Portal ID: `242518594`
-- Demo Form ID: `565af379-e462-4953-8aa3-0def5da100ca`
-
-### Testing
-
-Use the demo page (`index.html`) to test:
-1. Click test affiliate links to simulate tracking
-2. Submit the HubSpot form to verify field population
-3. Check browser console for debug output
-4. Use "Clear Tracking Data" to reset state
+### Testing Tracking
+Visit any form with `?rfsn=TEST123` in the URL to test tracking capture.
 
 ### Deployment
+Push to main branch - Vercel automatically deploys to forms.theloopway.com
 
-The project is configured for Vercel deployment with security headers. For Squarespace implementation, follow the guide in `squarespace-embed-guide.html`.
+## HubSpot Integration
 
-## Important Notes
+- Portal ID: 242518594
+- Required fields: refersionid, refersion_timestamp, refersion_source_url
+- Uses Forms API v3 for submissions
 
-- HTTPS is required for production use
-- The script is self-contained with no external dependencies
-- Debug mode logs to console - disable for production
-- Cross-origin limitations apply to iframe-embedded forms
+## Design Principles
+
+1. **Lightweight**: No heavy frameworks, minimal dependencies
+2. **Reliable**: Dual storage (cookies + localStorage), server backup
+3. **Embeddable**: Works in iframes with proper height adjustment
+4. **Tracked**: Every form submission includes affiliate data

@@ -1,19 +1,16 @@
 {
-  "name": "refersion-tracking-test",
+  "name": "loop-forms",
   "version": "1.0.0",
-  "description": "Simple server for testing Refersion referral tracking and cookies",
-  "main": "src/hubspot-integration.js",
+  "description": "LOOP Forms Platform with Refersion Tracking",
+  "type": "module",
   "scripts": {
-    "start": "node demo/server.js",
-    "test": "node tests/test-integration.js",
-    "test:browser": "node tests/test-integration-puppeteer.js",
-    "test:loop": "node tests/test-theloopway.js",
-    "test:loop:quick": "node tests/test-loop-quick.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vercel --prod"
   },
   "devDependencies": {
-    "puppeteer": "^23.0.0"
+    "vite": "^5.0.0",
+    "vercel": "^32.0.0"
   }
 }
