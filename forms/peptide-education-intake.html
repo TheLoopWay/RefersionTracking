@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peptide Education Call Prep - LOOP</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* Additional styles for this longer form */
+    .form-section {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .form-section:last-child {
+      border-bottom: none;
+    }
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .checkbox-item input[type="checkbox"] {
+      margin-top: 0.25rem;
+      flex-shrink: 0;
+    }
+    .checkbox-item label {
+      cursor: pointer;
+      line-height: 1.4;
+    }
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .scale-input {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .scale-input input[type="range"] {
+      flex: 1;
+    }
+    .scale-value {
+      font-weight: bold;
+      min-width: 2rem;
+      text-align: center;
+    }
+    .consent-section {
+      background: #f5f5f5;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+    .consent-section h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    .consent-section ol {
+      margin-left: 1.5rem;
+    }
+    .consent-section li {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="form-logo">
+      <img src="https://242518594.fs1.hubspotusercontent-na2.net/hubfs/242518594/LOOP%20250%20wide-3.png" alt="LOOP" />
+    </div>
+    
+    <div class="form-header">
+      <h1 class="form-title">Welcome to Your Peptide Education Call Prep!</h1>
+      <p class="form-description">
+        Thank you for booking your Peptide Education Call with LOOP. This form helps us get to know you a little better so we can tailor the conversation to your goals and curiosity.
+      </p>
+    </div>
+    
+    <div id="form-message" class="form-message"></div>
+    
+    <form id="peptide-intake-form">
+      <!-- Basic Information -->
+      <div class="form-section">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstname">First Name<span class="required">*</span></label>
+            <input type="text" id="firstname" name="firstname" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="lastname">Last Name<span class="required">*</span></label>
+            <input type="text" id="lastname" name="lastname" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email<span class="required">*</span></label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="newsletter" name="newsletter">
+            <label for="newsletter">Sign up for news and updates</label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Phone Number<span class="required">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date_of_birth">Date of Birth<span class="required">*</span></label>
+            <input type="date" id="date_of_birth" name="date_of_birth" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+              <option value="">Please select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+              <option value="prefer_not_to_say">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="height">Height<span class="required">*</span></label>
+            <input type="text" id="height" name="height" placeholder="e.g. 5'10&quot; or 178cm" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="weight">Weight<span class="required">*</span></label>
+            <input type="text" id="weight" name="weight" placeholder="e.g. 170 lbs or 77 kg" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="referral">Were you referred by anyone?</label>
+          <input type="text" id="referral" name="referral" placeholder="Name of person who referred you">
+        </div>
+        
+        <div class="form-group">
+          <label for="occupation">Occupation</label>
+          <input type="text" id="occupation" name="occupation">
+        </div>
+      </div>
+      
+      <!-- Peptide Interest -->
+      <div class="form-section">
+        <div class="form-group">
+          <label>If you're familiar with peptides, please click up to five that you're interested in exploring. (Below are their names and potential benefits to help guide your selection.)</label>
+          <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">Peptides Interested in Exploring<span class="required">*</span></p>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_loop_lean" name="peptides_interested" value="LOOP LEAN (GLP-2)">
+              <label for="peptide_loop_lean">LOOP LEAN (GLP-2) – May support weight loss & appetite control</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_loop_lean_burn" name="peptides_interested" value="LOOP LEAN/BURN (GLP-3)">
+              <label for="peptide_loop_lean_burn">LOOP LEAN/BURN (GLP-3) - May aid in fat loss & metabolism support</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_tesamorelin" name="peptides_interested" value="Tesamorelin">
+              <label for="peptide_tesamorelin">Tesamorelin – May help reduce visceral fat</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_cjc_ipa" name="peptides_interested" value="CJC-1295/Ipamorelin">
+              <label for="peptide_cjc_ipa">CJC-1295/Ipamorelin – May support fat loss & muscle growth</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_sermorelin" name="peptides_interested" value="Sermorelin">
+              <label for="peptide_sermorelin">Sermorelin – May promote natural HGH release</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_aod9604" name="peptides_interested" value="AOD 9604">
+              <label for="peptide_aod9604">AOD 9604 – May assist with fat breakdown</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_motsc" name="peptides_interested" value="MOTs-C">
+              <label for="peptide_motsc">MOTs-C – May enhance energy & metabolic function</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_bpc157" name="peptides_interested" value="BPC-157">
+              <label for="peptide_bpc157">BPC-157 – May promote healing & reduce inflammation</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_bpc157_oral" name="peptides_interested" value="BPC-157 Oral">
+              <label for="peptide_bpc157_oral">BPC-157 Oral – May promote systemic healing & GI support</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_tb500" name="peptides_interested" value="TB-500">
+              <label for="peptide_tb500">TB-500 – May support muscle & tissue repair</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_kpv" name="peptides_interested" value="KPV">
+              <label for="peptide_kpv">KPV – May soothe gut & skin inflammation</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_thymosin" name="peptides_interested" value="Thymosin Alpha 1 / Thymalin">
+              <label for="peptide_thymosin">Thymosin Alpha 1 / Thymalin – May support immune function</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_ghkcu" name="peptides_interested" value="GHK-Cu">
+              <label for="peptide_ghkcu">GHK-Cu – May aid in skin repair & collagen support</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_epithalon" name="peptides_interested" value="Epithalon">
+              <label for="peptide_epithalon">Epithalon – May promote longevity & sleep quality</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_nad" name="peptides_interested" value="NAD+">
+              <label for="peptide_nad">NAD+ – May support energy, cellular repair & cognition</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_pt141" name="peptides_interested" value="PT-141">
+              <label for="peptide_pt141">PT-141 – May enhance libido & sexual function</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_semax" name="peptides_interested" value="Semax">
+              <label for="peptide_semax">Semax – May support focus, memory, and stress resilience</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="peptide_not_sure" name="peptides_interested" value="I'm not sure yet!">
+              <label for="peptide_not_sure">I'm not sure yet!</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Medical History -->
+      <div class="form-section">
+        <div class="form-group">
+          <label>Have you ever used peptides before?</label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="peptides_yes" name="used_peptides_before" value="yes">
+              <label for="peptides_yes">Yes</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="peptides_no" name="used_peptides_before" value="no">
+              <label for="peptides_no">No</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="medical_conditions">Do you have any pre-existing medical conditions?</label>
+          <textarea id="medical_conditions" name="medical_conditions" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="cancer_history">Do you have a history of cancer?</label>
+          <input type="text" id="cancer_history" name="cancer_history">
+        </div>
+        
+        <div class="form-group">
+          <label for="family_cancer_history">Do you have a family history of cancer?</label>
+          <input type="text" id="family_cancer_history" name="family_cancer_history">
+        </div>
+        
+        <div class="form-group">
+          <label for="supplements">Please list the supplements you are currently taking.<span class="required">*</span></label>
+          <textarea id="supplements" name="supplements" rows="3" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="medications">Please list the medications you are currently taking.<span class="required">*</span></label>
+          <textarea id="medications" name="medications" rows="3" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="allergies">Please list any allergies or sensitivities to food, supplements, animals or chemicals.<span class="required">*</span></label>
+          <textarea id="allergies" name="allergies" rows="3" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="hospitalizations">Have you had any recent hospitalizations? If so, please explain.<span class="required">*</span></label>
+          <textarea id="hospitalizations" name="hospitalizations" rows="3" required></textarea>
+        </div>
+      </div>
+      
+      <!-- Lifestyle -->
+      <div class="form-section">
+        <div class="form-group">
+          <label for="sleep_hours">How many hours of sleep do you typically get per night?<span class="required">*</span></label>
+          <select id="sleep_hours" name="sleep_hours" required>
+            <option value="">Please select</option>
+            <option value="less_than_5">Less than 5 hours</option>
+            <option value="5_6_hours">5–6 hours</option>
+            <option value="6_7_hours">6–7 hours</option>
+            <option value="7_8_hours">7–8 hours</option>
+            <option value="more_than_8">More than 8 hours</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="alcohol_consumption">Do you consume alcohol?<span class="required">*</span></label>
+          <select id="alcohol_consumption" name="alcohol_consumption" required>
+            <option value="">Please select</option>
+            <option value="regularly">Yes, regularly</option>
+            <option value="occasionally">Occasionally</option>
+            <option value="rarely">Rarely</option>
+            <option value="never">Never</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Do you use tobacco or nicotine products?<span class="required">*</span></label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="tobacco_yes" name="tobacco_use" value="yes" required>
+              <label for="tobacco_yes">Yes</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="tobacco_no" name="tobacco_use" value="no" required>
+              <label for="tobacco_no">No</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="activity_level">What is your current activity level?<span class="required">*</span></label>
+          <select id="activity_level" name="activity_level" required>
+            <option value="">Please select</option>
+            <option value="sedentary">Sedentary (little to no exercise)</option>
+            <option value="lightly_active">Lightly active (light exercise/sports 1–3 days/week)</option>
+            <option value="moderately_active">Moderately active (moderate exercise/sports 3–5 days/week)</option>
+            <option value="very_active">Very active (hard exercise/sports 6–7 days/week)</option>
+            <option value="extremely_active">Extremely active (daily intense training or physical job)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="stress_level">On a scale of 1 to 10 (1 = No Stress, 10 = Extremely High Stress), how would you rate your current stress level?<span class="required">*</span></label>
+          <div class="scale-input">
+            <input type="range" id="stress_level" name="stress_level" min="1" max="10" value="5" required>
+            <span class="scale-value" id="stress_value">5</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Goals & Diet -->
+      <div class="form-section">
+        <div class="form-group">
+          <label for="weight_concerns">Do you have any weight concerns? If so, how much weight would you like to lose or gain?</label>
+          <textarea id="weight_concerns" name="weight_concerns" rows="2"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="diet_plan">Do you follow a specific diet or nutrition plan? If yes, please describe.</label>
+          <textarea id="diet_plan" name="diet_plan" rows="2"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="food_preferences">Do you have any food preferences or restrictions (gluten free or vegetarian for example).</label>
+          <textarea id="food_preferences" name="food_preferences" rows="2"></textarea>
+        </div>
+      </div>
+      
+      <!-- Consent & Bloodwork -->
+      <div class="form-section">
+        <div class="form-group">
+          <label>Do you consent to a Peptide Consultant and our AI reviewing your submitted information to create a personalized, research-based wellness plan?<span class="required">*</span></label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="ai_consent_yes" name="ai_consent" value="yes" required>
+              <label for="ai_consent_yes">Yes</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Do you have up-to-date bloodwork completed within the last 3 months?<span class="required">*</span></label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="bloodwork_yes" name="bloodwork_status" value="yes" required>
+              <label for="bloodwork_yes">Yes, I have current bloodwork and will send it prior to my coaching call. If anything is missing, I will complete the necessary tests beforehand.</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="bloodwork_no" name="bloodwork_status" value="no" required>
+              <label for="bloodwork_no">No, I still need to complete my bloodwork and will do so before the coaching call.</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="health_goals">What are your health and wellness goals?</label>
+          <textarea id="health_goals" name="health_goals" rows="4"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="additional_info">Anything else you'd like to share!</label>
+          <textarea id="additional_info" name="additional_info" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <p>LOOP is committed to protecting and respecting your privacy, and we'll only use your personal information to administer your account and to provide the products and services you requested from us. From time to time, we would like to contact you about our products and services, as well as other content that may be of interest to you. If you consent to us contacting you for this purpose, please tick below to say how you would like us to contact you:</p>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="marketing_consent" name="marketing_consent">
+              <label for="marketing_consent">I agree to receive other communications from LOOP.</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Consent & Liability Waiver -->
+      <div class="consent-section">
+        <h3>Consent & Liability Waiver</h3>
+        <p>By submitting this intake form, I acknowledge, understand, and agree to the following:</p>
+        
+        <ol>
+          <li>
+            <strong>Informational Use Only:</strong><br>
+            I understand that Loop Health & Wellness LLC is not a licensed medical provider and does not offer medical advice, diagnosis, or treatment. All services, content, and communications are for informational and educational purposes only. Nothing provided by LOOP is intended to replace consultation with a licensed healthcare professional.
+          </li>
+          
+          <li>
+            <strong>Personal Responsibility & Risk:</strong><br>
+            I take full and sole responsibility for all decisions related to my health, wellness, and use of any information or services provided by Loop Health & Wellness. I agree to consult a qualified medical provider before beginning any new wellness protocol, including supplements, peptides, or lifestyle changes.
+          </li>
+          
+          <li>
+            <strong>Research-Use Only Disclaimer:</strong><br>
+            I acknowledge that peptides referenced or discussed by Loop Health & Wellness are for <strong>research use only</strong>, have not been evaluated by the FDA, and are not approved for human consumption. I voluntarily assume all risks associated with their purchase, possession, or use, and release Loop Health & Wellness from any and all liability, including for side effects or adverse reactions.
+          </li>
+          
+          <li>
+            <strong>Bloodwork and AI-Generated Insights:</strong><br>
+            If I choose to submit lab results, I authorize Loop Health & Wellness to process them using AI-powered tools to generate educational insights. I understand these insights are not medically validated or intended to diagnose or treat any condition. I acknowledge that LOOP does not interpret bloodwork for clinical or diagnostic use, and I accept all responsibility for how I use or act on this information.
+          </li>
+          
+          <li>
+            <strong>Release of Liability:</strong><br>
+            I expressly waive, release, and discharge Loop Health & Wellness LLC, its officers, employees, contractors, and affiliates from any and all claims, demands, damages, or liabilities arising from my participation in its programs, use of peptides, or reliance on any information provided through its services — including but not limited to errors, omissions, or the use of AI-generated insights.
+          </li>
+        </ol>
+        
+        <p style="margin-top: 1.5rem;"><strong>By clicking submit, I confirm that I have read this waiver in full and agree to all terms. I consent to Loop Health & Wellness storing and processing my submitted information for the purpose of providing the services requested.</strong></p>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">Submit</button>
+      </div>
+    </form>
+  </div>
+  
+  <!-- Refersion Tracking Pixel -->
+  <img src="https://refersion.com/tracker/v4/pub_ee6ba2b9f9295e53f4eb.gif" style="display:none;" />
+  
+  <script type="module">
+    import { FormHandler } from '/js/forms.js';
+    import { tracker } from '/js/tracking.js';
+    
+    // Initialize tracking
+    tracker.init();
+    
+    // Update stress level display
+    const stressInput = document.getElementById('stress_level');
+    const stressValue = document.getElementById('stress_value');
+    stressInput.addEventListener('input', (e) => {
+      stressValue.textContent = e.target.value;
+    });
+    
+    // Limit peptide selections to 5
+    const peptideCheckboxes = document.querySelectorAll('input[name="peptides_interested"]');
+    peptideCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        const checkedCount = document.querySelectorAll('input[name="peptides_interested"]:checked').length;
+        if (checkedCount >= 5) {
+          peptideCheckboxes.forEach(cb => {
+            if (!cb.checked) cb.disabled = true;
+          });
+        } else {
+          peptideCheckboxes.forEach(cb => {
+            cb.disabled = false;
+          });
+        }
+      });
+    });
+    
+    // Initialize form handler
+    const formHandler = new FormHandler({
+      portalId: '242518594',
+      formId: '61fbcc93-22ef-4b3b-bc45-48f5a8737e47', // You'll need to create this form in HubSpot
+      formElementId: 'peptide-intake-form',
+      messageElementId: 'form-message'
+    });
+  </script>
+</body>
+</html>

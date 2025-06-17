@@ -64,11 +64,30 @@ export class FormHandler {
 
   prepareFields(formData) {
     const fields = [];
+    const fieldMap = {};
     
-    // Add form fields
+    // First pass: collect all values, handling checkbox groups
     for (const [name, value] of formData.entries()) {
-      fields.push({ name, value: value.toString() });
+      if (fieldMap[name]) {
+        // Multiple values for same field (checkboxes)
+        if (!Array.isArray(fieldMap[name])) {
+          fieldMap[name] = [fieldMap[name]];
+        }
+        fieldMap[name].push(value);
+      } else {
+        fieldMap[name] = value;
+      }
     }
+    
+    // Second pass: convert to HubSpot format
+    Object.entries(fieldMap).forEach(([name, value]) => {
+      if (Array.isArray(value)) {
+        // Join multiple selections with semicolon for HubSpot
+        fields.push({ name, value: value.join('; ') });
+      } else {
+        fields.push({ name, value: value.toString() });
+      }
+    });
     
     // Add tracking data
     const trackingData = tracker.getFormData();
