@@ -72,4 +72,15 @@
       window.r('click', rfsn);
     }
   }
+  
+  // Check localStorage for existing tracking
+  try {
+    const storedRfsn = localStorage.getItem('rfsn');
+    if (storedRfsn && !iframeParams.has('rfsn')) {
+      // Add stored tracking to iframe URL
+      iframe.src = iframe.src + (iframe.src.includes('?') ? '&' : '?') + 'rfsn=' + encodeURIComponent(storedRfsn);
+    }
+  } catch (e) {
+    // localStorage might not be available
+  }
 })();

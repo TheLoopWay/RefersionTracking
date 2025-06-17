@@ -27,8 +27,19 @@ export class RefersionTracker {
    * Capture tracking from URL parameters
    */
   captureFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const rfsn = params.get('rfsn');
+    // Try current window first
+    let params = new URLSearchParams(window.location.search);
+    let rfsn = params.get('rfsn');
+    
+    // If in iframe and no tracking, try parent URL
+    if (!rfsn && window !== window.parent) {
+      try {
+        params = new URLSearchParams(window.parent.location.search);
+        rfsn = params.get('rfsn');
+      } catch (e) {
+        // Cross-origin, can't access parent
+      }
+    }
     
     if (rfsn) {
       const data = {
