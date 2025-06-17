@@ -4,7 +4,11 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static('.'));
+// Serve static files from demo directory
+app.use(express.static(__dirname));
+
+// Serve source files from parent src directory
+app.use('/src', express.static(path.join(__dirname, '../src')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

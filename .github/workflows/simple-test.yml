@@ -1,0 +1,40 @@
+name: Test Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test Refersion Integration
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Quick connectivity test
+      run: node test-loop-quick.js
+      continue-on-error: true
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run full browser test
+      run: npm run test:loop
+      continue-on-error: true
+        
+    - name: Upload screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-screenshots
+        path: test-*.png
+        retention-days: 30

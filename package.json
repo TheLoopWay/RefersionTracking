@@ -2,11 +2,18 @@
   "name": "refersion-tracking-test",
   "version": "1.0.0",
   "description": "Simple server for testing Refersion referral tracking and cookies",
-  "main": "server.js",
+  "main": "src/hubspot-integration.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node demo/server.js",
+    "test": "node tests/test-integration.js",
+    "test:browser": "node tests/test-integration-puppeteer.js",
+    "test:loop": "node tests/test-theloopway.js",
+    "test:loop:quick": "node tests/test-loop-quick.js"
   },
   "dependencies": {
     "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "puppeteer": "^23.0.0"
   }
 }
