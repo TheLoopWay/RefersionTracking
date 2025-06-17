@@ -16,7 +16,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'forms/index.html'),
         peptideInquiry: resolve(__dirname, 'forms/peptide-inquiry.html'),
-        consultation: resolve(__dirname, 'forms/consultation.html')
+        consultation: resolve(__dirname, 'forms/consultation.html'),
+        peptideEducationIntake: resolve(__dirname, 'forms/peptide-education-intake.html')
       }
     }
   },
