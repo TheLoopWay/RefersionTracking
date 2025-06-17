@@ -62,8 +62,8 @@ export class RefersionTracker {
       console.warn('LocalStorage not available:', e);
     }
     
-    // Send to server for backup
-    this.sendToServer(data);
+    // Server backup disabled for now
+    // this.sendToServer(data);
   }
 
   /**
