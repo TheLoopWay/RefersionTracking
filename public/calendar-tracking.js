@@ -91,7 +91,7 @@
     const hutkMatch = document.cookie.match(/hubspotutk=([^;]+)/);
     if (hutkMatch) {
       // Store mapping for server-side processing
-      fetch('/api/track', {
+      fetch('https://forms.theloopway.com/api/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,19 +117,30 @@
   }
   
   // Watch for dynamically added meeting links
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.addedNodes.length) {
-        injectTracking();
-      }
+  function startObserving() {
+    if (!document.body) {
+      // Body not ready yet, try again
+      setTimeout(startObserving, 10);
+      return;
+    }
+    
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.addedNodes.length) {
+          injectTracking();
+        }
+      });
     });
-  });
+    
+    // Start observing
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
   
-  // Start observing
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+  // Start observing when body is available
+  startObserving();
   
   // Expose function for manual use
   window.LoopCalendarTracking = {
