@@ -157,6 +157,7 @@ The tracking works cross-domain, so affiliates are tracked even when the form is
 - [SCRIPTS EXPLAINED](SCRIPTS-EXPLAINED.md) - **READ THIS FIRST!** Visual guide to the two scripts
 - [Installation Guide](INSTALLATION.md) - Detailed setup instructions
 - [Squarespace Guide](SQUARESPACE-GUIDE.md) - Quick start for Squarespace
+- [Calendar Tracking](CALENDAR-TRACKING.md) - HubSpot meeting scheduler integration
 - [CLAUDE.md](CLAUDE.md) - AI assistant documentation
 
 ## Support

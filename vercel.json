@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build && cp public/embed.js dist/",
+  "buildCommand": "npm run build && cp public/embed.js public/calendar-tracking.js dist/",
   "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
