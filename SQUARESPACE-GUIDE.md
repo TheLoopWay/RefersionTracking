@@ -67,11 +67,12 @@ When someone visits your page with an affiliate link:
 theloopway.com/page?rfsn=AFFILIATE123
 ```
 
-The form automatically:
-1. Captures the `rfsn` parameter
-2. Stores it for 30 days
-3. Includes it in every form submission
-4. Shows the correct form ID in HubSpot
+The tracking flow:
+1. Your global script captures `rfsn` and stores in localStorage
+2. The embed script reads from localStorage
+3. Passes tracking to the form iframe
+4. Form includes it in HubSpot submission
+5. Contact created with refersionid field populated
 
 ## 🔧 For Both Sites
 

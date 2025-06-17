@@ -76,16 +76,19 @@ That's it! The form will:
 ## How Tracking Works
 
 1. **URL Parameters**: Captures `?rfsn=XXXXX` from the parent page URL
-2. **Cross-Domain**: Works even when form is on different domain
-3. **Multi-Storage**: Saves to cookies and localStorage  
-4. **Server Backup**: Sends to edge function (optional)
-5. **Form Integration**: Automatically adds to HubSpot submissions
+2. **localStorage Bridge**: Embed script reads parent page's localStorage and passes to iframe
+3. **Cross-Domain**: Works even when form is on different domain
+4. **Multi-Storage**: Saves to cookies and localStorage  
+5. **Server Backup**: Sends to edge function (optional)
+6. **Form Integration**: Automatically adds to HubSpot submissions
 
 ### Example Flow
 ```
 User visits: theloopway.com/page?rfsn=ABC123
              ↓
-Embed script captures tracking
+Global script stores in localStorage
+             ↓
+Embed script reads localStorage + passes to iframe
              ↓
 Form loads with tracking preserved
              ↓
