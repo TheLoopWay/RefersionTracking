@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Tracking Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .test-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-left: 10px;
+    }
+    .pass { background: #d4edda; color: #155724; }
+    .fail { background: #f8d7da; color: #721c24; }
+    .warn { background: #fff3cd; color: #856404; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+    .code {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .instructions {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Quick Cross-Domain Tracking Test</h1>
+  
+  <div class="instructions">
+    <h3>📋 How to use this test:</h3>
+    <ol>
+      <li>Open this file on both <strong>theloopway.com</strong> and <strong>loopbiolabs.com</strong></li>
+      <li>Click "Run All Tests" on each site</li>
+      <li>Compare results to ensure tracking is consistent</li>
+    </ol>
+  </div>
+
+  <div class="test-card">
+    <h2>Current Site Info</h2>
+    <p><strong>Domain:</strong> <span id="current-domain"></span></p>
+    <p><strong>Protocol:</strong> <span id="current-protocol"></span></p>
+    <p><strong>Has Tracking Parameter:</strong> <span id="has-tracking"></span></p>
+  </div>
+
+  <div class="test-card">
+    <h2>Test Results</h2>
+    <div id="test-results"></div>
+    <button onclick="runAllTests()">Run All Tests</button>
+    <button onclick="clearAndRetest()">Clear Storage & Retest</button>
+  </div>
+
+  <div class="test-card">
+    <h2>Manual Test Links</h2>
+    <div id="test-links"></div>
+    <button onclick="generateLinks()">Generate Test Links</button>
+  </div>
+
+  <div class="test-card">
+    <h2>Storage Inspector</h2>
+    <div id="storage-info"></div>
+    <button onclick="inspectStorage()">Inspect Storage</button>
+  </div>
+
+  <script>
+    // Initialize
+    document.getElementById('current-domain').textContent = window.location.hostname;
+    document.getElementById('current-protocol').textContent = window.location.protocol;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasTracking = urlParams.get('rfsn') ? 'Yes - ' + urlParams.get('rfsn') : 'No';
+    document.getElementById('has-tracking').textContent = hasTracking;
+
+    // Test suite
+    const tests = [
+      {
+        name: 'localStorage Available',
+        test: () => {
+          try {
+            localStorage.setItem('test', 'test');
+            localStorage.removeItem('test');
+            return { pass: true };
+          } catch (e) {
+            return { pass: false, error: e.message };
+          }
+        }
+      },
+      {
+        name: 'Cookies Enabled',
+        test: () => {
+          document.cookie = 'test=1';
+          const enabled = document.cookie.includes('test=1');
+          return { pass: enabled };
+        }
+      },
+      {
+        name: 'Refersion Tracking Stored',
+        test: () => {
+          const rfsn = localStorage.getItem('rfsn') || 
+                       getCookie('rfsn') || 
+                       sessionStorage.getItem('rfsn');
+          return { 
+            pass: !!rfsn, 
+            value: rfsn || 'Not found'
+          };
+        }
+      },
+      {
+        name: 'Refersion Script Loaded',
+        test: () => {
+          return { 
+            pass: !!(window.r && window.r.pubKey),
+            value: window.r ? 'Loaded' : 'Not loaded'
+          };
+        }
+      },
+      {
+        name: 'Tracking Functions Available',
+        test: () => {
+          const hasFunctions = typeof getRefersionTracking === 'function' ||
+                              typeof window.getRefersionTracking === 'function';
+          return { pass: hasFunctions };
+        }
+      },
+      {
+        name: 'Cross-Domain Ready',
+        test: () => {
+          const domain = window.location.hostname;
+          const otherDomain = domain.includes('loopway') ? 'loopbiolabs.com' : 'theloopway.com';
+          const hasLinks = document.body.innerHTML.includes(otherDomain);
+          return { 
+            pass: true, 
+            value: hasLinks ? 'Links found' : 'No cross-domain links'
+          };
+        }
+      }
+    ];
+
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? match[2] : null;
+    }
+
+    function runAllTests() {
+      const results = document.getElementById('test-results');
+      results.innerHTML = '<h3>Running tests...</h3>';
+      
+      const testResults = tests.map(test => {
+        const result = test.test();
+        return {
+          name: test.name,
+          ...result
+        };
+      });
+
+      results.innerHTML = testResults.map(result => `
+        <div style="margin: 10px 0;">
+          <strong>${result.name}:</strong>
+          <span class="status ${result.pass ? 'pass' : 'fail'}">
+            ${result.pass ? 'PASS' : 'FAIL'}
+          </span>
+          ${result.value ? `<span class="code">${result.value}</span>` : ''}
+          ${result.error ? `<span style="color: red;">${result.error}</span>` : ''}
+        </div>
+      `).join('');
+
+      // Summary
+      const passed = testResults.filter(r => r.pass).length;
+      const total = testResults.length;
+      results.innerHTML += `
+        <hr>
+        <h3>Summary: ${passed}/${total} tests passed (${Math.round(passed/total*100)}%)</h3>
+      `;
+    }
+
+    function clearAndRetest() {
+      if (!confirm('Clear all tracking data and retest?')) return;
+      
+      // Clear everything
+      try {
+        localStorage.removeItem('rfsn');
+        localStorage.removeItem('rfsn_timestamp');
+        localStorage.removeItem('rfsn_source_url');
+        sessionStorage.clear();
+        document.cookie = 'rfsn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      } catch (e) {}
+      
+      setTimeout(runAllTests, 100);
+    }
+
+    function generateLinks() {
+      const links = document.getElementById('test-links');
+      const testId = 'TEST-' + Date.now();
+      const domain = window.location.hostname;
+      
+      const destinations = [
+        {
+          name: 'TheLoopWay Home',
+          url: `https://theloopway.com?rfsn=${testId}`
+        },
+        {
+          name: 'LoopBioLabs Shop',
+          url: `https://loopbiolabs.com/shop?rfsn=${testId}`
+        },
+        {
+          name: 'Forms - Peptide Inquiry',
+          url: `https://forms.theloopway.com/peptide-inquiry.html?rfsn=${testId}`
+        }
+      ];
+
+      links.innerHTML = `
+        <p>Test ID: <span class="code">${testId}</span></p>
+        ${destinations.map(dest => `
+          <div style="margin: 10px 0;">
+            <a href="${dest.url}" target="_blank">${dest.name}</a>
+            <button onclick="navigator.clipboard.writeText('${dest.url}')" style="font-size: 12px;">
+              Copy URL
+            </button>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function inspectStorage() {
+      const info = document.getElementById('storage-info');
+      
+      const data = {
+        localStorage: {},
+        sessionStorage: {},
+        cookies: {}
+      };
+
+      // Get localStorage
+      try {
+        ['rfsn', 'rfsn_timestamp', 'rfsn_source_url'].forEach(key => {
+          const value = localStorage.getItem(key);
+          if (value) data.localStorage[key] = value;
+        });
+      } catch (e) {}
+
+      // Get sessionStorage
+      try {
+        ['rfsn', 'rfsn_timestamp'].forEach(key => {
+          const value = sessionStorage.getItem(key);
+          if (value) data.sessionStorage[key] = value;
+        });
+      } catch (e) {}
+
+      // Get cookies
+      document.cookie.split(';').forEach(cookie => {
+        const [key, value] = cookie.trim().split('=');
+        if (key && key.includes('rfsn')) {
+          data.cookies[key] = value;
+        }
+      });
+
+      info.innerHTML = `
+        <h4>localStorage:</h4>
+        <pre class="code">${JSON.stringify(data.localStorage, null, 2)}</pre>
+        
+        <h4>sessionStorage:</h4>
+        <pre class="code">${JSON.stringify(data.sessionStorage, null, 2)}</pre>
+        
+        <h4>Cookies:</h4>
+        <pre class="code">${JSON.stringify(data.cookies, null, 2)}</pre>
+      `;
+    }
+
+    // Auto-run on load
+    window.addEventListener('load', () => {
+      runAllTests();
+      inspectStorage();
+    });
+  </script>
+</body>
+</html>

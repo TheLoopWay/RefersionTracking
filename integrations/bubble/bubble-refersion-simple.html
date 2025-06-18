@@ -1,0 +1,99 @@
+<!-- SIMPLE REFERSION TRACKING FOR BUBBLE -->
+<script>
+// Wait for page to be ready
+(function() {
+    // Capture tracking immediately
+    function captureTracking() {
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const rfsn = urlParams.get('rfsn') || urlParams.get('RFSN');
+        
+        if (rfsn) {
+            console.log('[Refersion] Found tracking parameter:', rfsn);
+            
+            // Store in localStorage
+            try {
+                localStorage.setItem('rfsn', rfsn);
+                localStorage.setItem('rfsn_timestamp', new Date().toISOString());
+                localStorage.setItem('rfsn_source_url', window.location.href);
+                console.log('[Refersion] Saved to localStorage');
+            } catch (e) {
+                console.error('[Refersion] localStorage error:', e);
+            }
+            
+            // Store in cookies
+            try {
+                document.cookie = `rfsn=${rfsn}; max-age=2592000; path=/`;
+                console.log('[Refersion] Saved to cookies');
+            } catch (e) {
+                console.error('[Refersion] Cookie error:', e);
+            }
+        }
+    }
+    
+    // Run immediately
+    captureTracking();
+    
+    // Also run when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', captureTracking);
+    }
+    
+    // Watch for Bubble navigation changes
+    let lastUrl = location.href;
+    new MutationObserver(() => {
+        const url = location.href;
+        if (url !== lastUrl) {
+            lastUrl = url;
+            console.log('[Refersion] URL changed, checking for tracking...');
+            setTimeout(captureTracking, 100);
+        }
+    }).observe(document.body || document.documentElement, {
+        subtree: true,
+        childList: true
+    });
+})();
+
+// Global helper function for Bubble
+window.getRefersionTracking = function() {
+    const rfsn = localStorage.getItem('rfsn') || '';
+    const cookieMatch = document.cookie.match(/rfsn=([^;]+)/);
+    const cookieRfsn = cookieMatch ? cookieMatch[1] : '';
+    
+    return {
+        rfsn: rfsn || cookieRfsn,
+        timestamp: localStorage.getItem('rfsn_timestamp') || '',
+        source_url: localStorage.getItem('rfsn_source_url') || ''
+    };
+};
+</script>
+
+<!-- REFERSION SCRIPT LOADER (SEPARATE) -->
+<script>
+// Load Refersion library
+(function(e, n, t, i, o, c, s, a) {
+    e.TrackingSystemObject = "r";
+    s = n.createElement(t);
+    s.async = 1;
+    s.src = "https://cdn.refersion.com/refersion.js";
+    s.onload = function() {
+        r.pubKey = "pub_ee6ba2b9f9295e53f4eb";
+        r.settings.fp_off = true;
+        
+        r.initializeXDLS().then(() => {
+            r.launchDefault().then(() => {
+                console.log('[Refersion] Library loaded');
+                
+                // Try to track any existing affiliate
+                const tracking = window.getRefersionTracking();
+                if (tracking.rfsn && window.r.click) {
+                    window.r.click(tracking.rfsn);
+                    console.log('[Refersion] Tracked affiliate:', tracking.rfsn);
+                }
+            });
+        });
+    };
+    a = n.getElementsByTagName(t)[0];
+    a.parentNode.insertBefore(s, a);
+})(window, document, "script");
+</script>

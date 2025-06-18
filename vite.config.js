@@ -20,10 +20,14 @@ export default defineConfig({
         peptideEducationIntake: resolve(__dirname, 'forms/peptide-education-intake.html'),
         thankYouIntake: resolve(__dirname, 'forms/thank-you-intake.html')
       }
-    }
+    },
+    copyPublicDir: true
   },
   server: {
     port: 3000,
-    cors: true
+    cors: true,
+    fs: {
+      allow: ['..']
+    }
   }
 });

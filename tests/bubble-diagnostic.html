@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble Tracking Diagnostic</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .diagnostic {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .status { 
+      padding: 5px 10px; 
+      border-radius: 4px; 
+      margin-left: 10px;
+      font-size: 14px;
+    }
+    .pass { background: #d4edda; color: #155724; }
+    .fail { background: #f8d7da; color: #721c24; }
+    .code {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      margin: 10px 0;
+      word-break: break-all;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Bubble Tracking Diagnostic</h1>
+  
+  <div class="diagnostic">
+    <h2>1. URL Parameters</h2>
+    <div id="url-params"></div>
+  </div>
+
+  <div class="diagnostic">
+    <h2>2. Storage Status</h2>
+    <div id="storage-status"></div>
+  </div>
+
+  <div class="diagnostic">
+    <h2>3. Script Loading</h2>
+    <div id="script-status"></div>
+  </div>
+
+  <div class="diagnostic">
+    <h2>4. Manual Tracking Test</h2>
+    <button onclick="manualTrack()">Manually Track TEST123</button>
+    <div id="manual-result"></div>
+  </div>
+
+  <div class="diagnostic">
+    <h2>5. Debug Console</h2>
+    <div id="console" class="code" style="height: 200px; overflow-y: auto;"></div>
+  </div>
+
+  <script>
+    // Debug console
+    function log(message, type = 'info') {
+      const consoleDiv = document.getElementById('console');
+      const time = new Date().toLocaleTimeString();
+      const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'blue';
+      consoleDiv.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    }
+
+    // Check URL parameters
+    function checkUrlParams() {
+      const div = document.getElementById('url-params');
+      const params = new URLSearchParams(window.location.search);
+      const rfsn = params.get('rfsn') || params.get('RFSN');
+      
+      div.innerHTML = `
+        <p><strong>Current URL:</strong> <span class="code">${window.location.href}</span></p>
+        <p><strong>Search params:</strong> <span class="code">${window.location.search || 'None'}</span></p>
+        <p><strong>rfsn parameter:</strong> ${rfsn ? `<span class="status pass">${rfsn}</span>` : '<span class="status fail">Not found</span>'}</p>
+        <p><strong>All parameters:</strong></p>
+      `;
+      
+      if (params.toString()) {
+        params.forEach((value, key) => {
+          div.innerHTML += `<p style="margin-left: 20px;">${key}: <span class="code">${value}</span></p>`;
+        });
+      } else {
+        div.innerHTML += '<p style="margin-left: 20px; color: #666;">No parameters found</p>';
+      }
+      
+      log(`URL checked: ${rfsn ? 'Found rfsn=' + rfsn : 'No tracking parameter'}`);
+    }
+
+    // Check storage
+    function checkStorage() {
+      const div = document.getElementById('storage-status');
+      let html = '';
+      
+      // Test localStorage
+      try {
+        localStorage.setItem('test_diagnostic', 'test');
+        const test = localStorage.getItem('test_diagnostic');
+        localStorage.removeItem('test_diagnostic');
+        
+        const rfsn = localStorage.getItem('rfsn');
+        const timestamp = localStorage.getItem('rfsn_timestamp');
+        
+        html += `
+          <h3>localStorage <span class="status pass">Available</span></h3>
+          <p>rfsn: ${rfsn ? `<span class="code">${rfsn}</span>` : '<em>Not set</em>'}</p>
+          <p>timestamp: ${timestamp ? `<span class="code">${timestamp}</span>` : '<em>Not set</em>'}</p>
+        `;
+        
+        log(`localStorage: ${rfsn ? 'Has tracking' : 'No tracking stored'}`);
+      } catch (e) {
+        html += `<h3>localStorage <span class="status fail">Blocked</span></h3>`;
+        html += `<p style="color: red;">Error: ${e.message}</p>`;
+        log('localStorage blocked: ' + e.message, 'error');
+      }
+      
+      // Test cookies
+      try {
+        document.cookie = 'test_diagnostic=test; path=/';
+        const hasCookie = document.cookie.includes('test_diagnostic');
+        
+        const rfsnCookie = document.cookie.match(/rfsn=([^;]+)/);
+        
+        html += `
+          <h3>Cookies <span class="status ${hasCookie ? 'pass' : 'fail'}">${hasCookie ? 'Available' : 'Blocked'}</span></h3>
+          <p>rfsn cookie: ${rfsnCookie ? `<span class="code">${rfsnCookie[1]}</span>` : '<em>Not set</em>'}</p>
+        `;
+        
+        log(`Cookies: ${rfsnCookie ? 'Has tracking cookie' : 'No tracking cookie'}`);
+      } catch (e) {
+        html += `<h3>Cookies <span class="status fail">Error</span></h3>`;
+        log('Cookie error: ' + e.message, 'error');
+      }
+      
+      div.innerHTML = html;
+    }
+
+    // Check scripts
+    function checkScripts() {
+      const div = document.getElementById('script-status');
+      let html = '';
+      
+      // Check Refersion
+      const hasRefersion = !!(window.r && window.r.pubKey);
+      html += `<p>Refersion (window.r): <span class="status ${hasRefersion ? 'pass' : 'fail'}">${hasRefersion ? 'Loaded' : 'Not found'}</span></p>`;
+      if (hasRefersion) {
+        html += `<p style="margin-left: 20px;">Public key: <span class="code">${window.r.pubKey}</span></p>`;
+      }
+      
+      // Check tracking functions
+      const hasTrackingFunc = typeof window.getRefersionTracking === 'function';
+      html += `<p>getRefersionTracking(): <span class="status ${hasTrackingFunc ? 'pass' : 'fail'}">${hasTrackingFunc ? 'Available' : 'Not found'}</span></p>`;
+      
+      if (hasTrackingFunc) {
+        try {
+          const tracking = window.getRefersionTracking();
+          html += `<p style="margin-left: 20px;">Current tracking:</p>`;
+          html += `<pre class="code">${JSON.stringify(tracking, null, 2)}</pre>`;
+        } catch (e) {
+          html += `<p style="color: red; margin-left: 20px;">Error calling function: ${e.message}</p>`;
+        }
+      }
+      
+      // Check if captureAndStoreTracking exists
+      const hasCapture = typeof captureAndStoreTracking === 'function';
+      html += `<p>captureAndStoreTracking(): <span class="status ${hasCapture ? 'pass' : 'fail'}">${hasCapture ? 'Available' : 'Not found'}</span></p>`;
+      
+      div.innerHTML = html;
+      
+      log(`Scripts: Refersion=${hasRefersion}, Functions=${hasTrackingFunc}`);
+    }
+
+    // Manual tracking test
+    function manualTrack() {
+      const resultDiv = document.getElementById('manual-result');
+      const testId = 'TEST123';
+      
+      try {
+        // Try to store manually
+        localStorage.setItem('rfsn', testId);
+        localStorage.setItem('rfsn_timestamp', new Date().toISOString());
+        localStorage.setItem('rfsn_source_url', window.location.href);
+        
+        document.cookie = `rfsn=${testId}; max-age=${30*24*60*60}; path=/; SameSite=Lax`;
+        
+        // Try to track with Refersion
+        if (window.r && window.r.click) {
+          window.r.click(testId);
+          log('Called r.click() with ' + testId, 'success');
+        }
+        
+        resultDiv.innerHTML = `
+          <p class="status pass">Successfully stored tracking!</p>
+          <p>Refresh the page to see if it persists.</p>
+        `;
+        
+        log('Manual tracking successful', 'success');
+        
+        // Re-check storage
+        setTimeout(checkStorage, 100);
+        
+      } catch (e) {
+        resultDiv.innerHTML = `<p class="status fail">Error: ${e.message}</p>`;
+        log('Manual tracking failed: ' + e.message, 'error');
+      }
+    }
+
+    // Run diagnostics on load
+    window.addEventListener('load', function() {
+      log('Page loaded, running diagnostics...');
+      checkUrlParams();
+      checkStorage();
+      checkScripts();
+      
+      // Also try to capture if the function exists
+      if (typeof captureAndStoreTracking === 'function') {
+        log('Calling captureAndStoreTracking()...');
+        try {
+          captureAndStoreTracking();
+          log('captureAndStoreTracking() completed', 'success');
+        } catch (e) {
+          log('captureAndStoreTracking() error: ' + e.message, 'error');
+        }
+      }
+      
+      // Listen for Refersion loaded event
+      document.addEventListener('refersion-loaded', function() {
+        log('Refersion loaded event fired!', 'success');
+        checkScripts();
+      });
+    });
+
+    // Test URL with tracking
+    function testWithTracking() {
+      const testUrl = window.location.origin + window.location.pathname + '?rfsn=DIAGNOSTIC-TEST-' + Date.now();
+      window.location.href = testUrl;
+    }
+  </script>
+
+  <div class="diagnostic">
+    <h2>6. Test with Tracking Parameter</h2>
+    <button onclick="testWithTracking()">Reload with Test Parameter</button>
+    <p style="margin-top: 10px; color: #666;">This will reload the page with a test tracking parameter</p>
+  </div>
+
+</body>
+</html>

@@ -19,7 +19,7 @@
       </p>
     </div>
     
-    <form id="consultation-form">
+    <form id="consultation-form" data-form-name="Free Consultation">
       <div class="form-fields">
         <div class="form-row">
           <div class="form-group">
@@ -90,6 +90,7 @@
   <script type="module">
     import { FormHandler } from '/js/forms.js';
     import '/js/iframe-resize.js';
+    import '/js/segment-tracking.js';
     
     // TODO: Replace with your actual HubSpot form ID
     new FormHandler({

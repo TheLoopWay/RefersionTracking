@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cross-Domain Tracking Test Suite</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .header {
+      background: #333;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    .test-group {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    .test-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+    }
+    .status {
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .status.pass {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.fail {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    .btn-danger {
+      background: #dc3545;
+    }
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    .url-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .code-block {
+      background: #f4f4f4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e9ecef;
+      border-radius: 4px;
+    }
+    .iframe-container {
+      border: 2px dashed #ddd;
+      padding: 20px;
+      margin: 20px 0;
+      min-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 Cross-Domain Tracking Test Suite</h1>
+    <p>Test Refersion + HubSpot tracking across TheLoopWay.com and LoopBioLabs.com</p>
+  </div>
+
+  <!-- Site Configuration -->
+  <div class="test-section">
+    <h2>⚙️ Site Configuration</h2>
+    <div class="test-group">
+      <label>TheLoopWay URL:</label>
+      <input type="text" class="url-input" id="loopway-url" value="https://theloopway.com" />
+      
+      <label>LoopBioLabs URL:</label>
+      <input type="text" class="url-input" id="biolabs-url" value="https://loopbiolabs.com" />
+      
+      <label>Forms URL:</label>
+      <input type="text" class="url-input" id="forms-url" value="https://forms.theloopway.com" />
+      
+      <label>Test Affiliate ID:</label>
+      <input type="text" class="url-input" id="test-rfsn" value="TEST-CROSS-DOMAIN" />
+    </div>
+  </div>
+
+  <!-- Storage Tests -->
+  <div class="test-section">
+    <h2>💾 Storage Tests</h2>
+    <div class="test-group">
+      <h3>Current Site Storage</h3>
+      <div id="storage-tests"></div>
+      <button class="btn" onclick="runStorageTests()">Run Storage Tests</button>
+      <button class="btn btn-danger" onclick="clearAllStorage()">Clear All Storage</button>
+    </div>
+  </div>
+
+  <!-- Script Loading Tests -->
+  <div class="test-section">
+    <h2>📜 Script Loading Tests</h2>
+    <div class="test-group">
+      <div class="test-item">
+        <span>Refersion Script</span>
+        <span class="status pending" id="refersion-status">Not Tested</span>
+      </div>
+      <div class="test-item">
+        <span>HubSpot Script</span>
+        <span class="status pending" id="hubspot-status">Not Tested</span>
+      </div>
+      <div class="test-item">
+        <span>Custom Tracking Functions</span>
+        <span class="status pending" id="functions-status">Not Tested</span>
+      </div>
+      <button class="btn" onclick="runScriptTests()">Run Script Tests</button>
+    </div>
+  </div>
+
+  <!-- Cross-Domain Link Tests -->
+  <div class="test-section">
+    <h2>🔗 Cross-Domain Link Tests</h2>
+    <div class="test-group">
+      <h3>Test Links</h3>
+      <div id="link-tests"></div>
+      <button class="btn" onclick="generateTestLinks()">Generate Test Links</button>
+    </div>
+  </div>
+
+  <!-- Form Embedding Test -->
+  <div class="test-section">
+    <h2>📝 Form Embedding Test</h2>
+    <div class="test-group">
+      <button class="btn" onclick="loadTestForm()">Load Test Form</button>
+      <div class="iframe-container" id="form-container">
+        <p>Click "Load Test Form" to embed a form with tracking</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Tests -->
+  <div class="test-section">
+    <h2>🔌 API & Integration Tests</h2>
+    <div class="test-group">
+      <div class="test-item">
+        <span>Refersion API Key Valid</span>
+        <span class="status pending" id="refersion-api-status">Not Tested</span>
+      </div>
+      <div class="test-item">
+        <span>HubSpot Connection</span>
+        <span class="status pending" id="hubspot-api-status">Not Tested</span>
+      </div>
+      <div class="test-item">
+        <span>Cross-Domain Cookie Policy</span>
+        <span class="status pending" id="cookie-policy-status">Not Tested</span>
+      </div>
+      <button class="btn" onclick="runAPITests()">Run API Tests</button>
+    </div>
+  </div>
+
+  <!-- Test Results -->
+  <div class="test-section">
+    <h2>📊 Test Results</h2>
+    <div class="results" id="test-results">
+      <p>No tests run yet. Click the test buttons above to start.</p>
+    </div>
+    <button class="btn" onclick="exportResults()">Export Results</button>
+  </div>
+
+  <script>
+    // Storage Tests
+    function runStorageTests() {
+      const results = [];
+      const container = document.getElementById('storage-tests');
+      container.innerHTML = '';
+
+      // Test localStorage
+      try {
+        const testKey = 'test_' + Date.now();
+        localStorage.setItem(testKey, 'test');
+        const retrieved = localStorage.getItem(testKey);
+        localStorage.removeItem(testKey);
+        
+        results.push({
+          name: 'localStorage',
+          status: retrieved === 'test' ? 'pass' : 'fail',
+          value: localStorage.getItem('rfsn') || 'Not set'
+        });
+      } catch (e) {
+        results.push({
+          name: 'localStorage',
+          status: 'fail',
+          value: 'Error: ' + e.message
+        });
+      }
+
+      // Test sessionStorage
+      try {
+        const testKey = 'test_' + Date.now();
+        sessionStorage.setItem(testKey, 'test');
+        const retrieved = sessionStorage.getItem(testKey);
+        sessionStorage.removeItem(testKey);
+        
+        results.push({
+          name: 'sessionStorage',
+          status: retrieved === 'test' ? 'pass' : 'fail',
+          value: sessionStorage.getItem('rfsn') || 'Not set'
+        });
+      } catch (e) {
+        results.push({
+          name: 'sessionStorage',
+          status: 'fail',
+          value: 'Error: ' + e.message
+        });
+      }
+
+      // Test cookies
+      try {
+        document.cookie = 'test_cookie=test; path=/';
+        const hasCookie = document.cookie.includes('test_cookie=test');
+        
+        const rfsnCookie = document.cookie.match(/rfsn=([^;]+)/);
+        results.push({
+          name: 'cookies',
+          status: hasCookie ? 'pass' : 'fail',
+          value: rfsnCookie ? rfsnCookie[1] : 'Not set'
+        });
+      } catch (e) {
+        results.push({
+          name: 'cookies',
+          status: 'fail',
+          value: 'Error: ' + e.message
+        });
+      }
+
+      // Display results
+      results.forEach(result => {
+        const div = document.createElement('div');
+        div.className = 'test-item';
+        div.innerHTML = `
+          <span>${result.name}: ${result.value}</span>
+          <span class="status ${result.status}">${result.status.toUpperCase()}</span>
+        `;
+        container.appendChild(div);
+      });
+
+      updateResults('Storage tests completed', results);
+    }
+
+    // Script Tests
+    function runScriptTests() {
+      // Test Refersion
+      const refersionStatus = document.getElementById('refersion-status');
+      if (window.r && window.r.pubKey) {
+        refersionStatus.className = 'status pass';
+        refersionStatus.textContent = 'LOADED';
+      } else {
+        refersionStatus.className = 'status fail';
+        refersionStatus.textContent = 'NOT FOUND';
+      }
+
+      // Test HubSpot
+      const hubspotStatus = document.getElementById('hubspot-status');
+      if (window._hsq || window.HubSpotConversations) {
+        hubspotStatus.className = 'status pass';
+        hubspotStatus.textContent = 'LOADED';
+      } else {
+        hubspotStatus.className = 'status fail';
+        hubspotStatus.textContent = 'NOT FOUND';
+      }
+
+      // Test custom functions
+      const functionsStatus = document.getElementById('functions-status');
+      const hasAllFunctions = 
+        typeof getRefersionTracking === 'function' &&
+        typeof setCookie === 'function' &&
+        typeof getCookie === 'function';
+      
+      if (hasAllFunctions) {
+        functionsStatus.className = 'status pass';
+        functionsStatus.textContent = 'AVAILABLE';
+      } else {
+        functionsStatus.className = 'status fail';
+        functionsStatus.textContent = 'MISSING';
+      }
+
+      updateResults('Script tests completed');
+    }
+
+    // Generate test links
+    function generateTestLinks() {
+      const container = document.getElementById('link-tests');
+      const rfsn = document.getElementById('test-rfsn').value;
+      const loopwayUrl = document.getElementById('loopway-url').value;
+      const biolabsUrl = document.getElementById('biolabs-url').value;
+
+      const links = [
+        {
+          name: 'TheLoopWay with tracking',
+          url: `${loopwayUrl}?rfsn=${rfsn}`
+        },
+        {
+          name: 'LoopBioLabs with tracking',
+          url: `${biolabsUrl}?rfsn=${rfsn}`
+        },
+        {
+          name: 'Cross-domain link (LoopWay → BioLabs)',
+          url: `${biolabsUrl}/shop?rfsn=${rfsn}&from=loopway`
+        },
+        {
+          name: 'Cross-domain link (BioLabs → LoopWay)',
+          url: `${loopwayUrl}/peptides?rfsn=${rfsn}&from=biolabs`
+        }
+      ];
+
+      container.innerHTML = links.map(link => `
+        <div class="test-item">
+          <a href="${link.url}" target="_blank">${link.name}</a>
+          <button class="btn" onclick="navigator.clipboard.writeText('${link.url}')">Copy</button>
+        </div>
+      `).join('');
+
+      updateResults('Test links generated');
+    }
+
+    // Load test form
+    function loadTestForm() {
+      const container = document.getElementById('form-container');
+      const formsUrl = document.getElementById('forms-url').value;
+      const rfsn = document.getElementById('test-rfsn').value;
+      
+      container.innerHTML = `
+        <iframe 
+          src="${formsUrl}/peptide-inquiry.html?rfsn=${rfsn}" 
+          width="100%" 
+          height="600" 
+          frameborder="0"
+          style="border: 1px solid #ddd;">
+        </iframe>
+      `;
+
+      updateResults('Test form loaded with tracking');
+    }
+
+    // API Tests
+    async function runAPITests() {
+      // Test Refersion API
+      const refersionStatus = document.getElementById('refersion-api-status');
+      try {
+        // Check if Refersion pubkey is valid format
+        if (window.r && window.r.pubKey && window.r.pubKey.match(/^pub_[a-f0-9]+$/)) {
+          refersionStatus.className = 'status pass';
+          refersionStatus.textContent = 'VALID KEY';
+        } else {
+          refersionStatus.className = 'status fail';
+          refersionStatus.textContent = 'INVALID KEY';
+        }
+      } catch (e) {
+        refersionStatus.className = 'status fail';
+        refersionStatus.textContent = 'ERROR';
+      }
+
+      // Test Cookie Policy
+      const cookieStatus = document.getElementById('cookie-policy-status');
+      try {
+        // Test SameSite attribute
+        document.cookie = 'test_samesite=test; SameSite=None; Secure';
+        const hasSecureCookie = document.cookie.includes('test_samesite');
+        
+        if (hasSecureCookie || location.protocol === 'http:') {
+          cookieStatus.className = 'status pass';
+          cookieStatus.textContent = 'COMPATIBLE';
+        } else {
+          cookieStatus.className = 'status fail';
+          cookieStatus.textContent = 'BLOCKED';
+        }
+      } catch (e) {
+        cookieStatus.className = 'status fail';
+        cookieStatus.textContent = 'ERROR';
+      }
+
+      // HubSpot would require server-side testing
+      const hubspotStatus = document.getElementById('hubspot-api-status');
+      hubspotStatus.className = 'status pending';
+      hubspotStatus.textContent = 'REQUIRES SERVER';
+
+      updateResults('API tests completed');
+    }
+
+    // Clear all storage
+    function clearAllStorage() {
+      if (!confirm('This will clear all tracking data. Continue?')) return;
+
+      // Clear localStorage
+      try {
+        localStorage.removeItem('rfsn');
+        localStorage.removeItem('rfsn_timestamp');
+        localStorage.removeItem('rfsn_source_url');
+      } catch (e) {}
+
+      // Clear sessionStorage
+      try {
+        sessionStorage.clear();
+      } catch (e) {}
+
+      // Clear cookies
+      document.cookie.split(";").forEach(function(c) { 
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+      });
+
+      runStorageTests();
+      updateResults('All storage cleared');
+    }
+
+    // Update results
+    function updateResults(message, data) {
+      const results = document.getElementById('test-results');
+      const timestamp = new Date().toLocaleTimeString();
+      
+      const entry = document.createElement('div');
+      entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+      
+      if (data) {
+        const pre = document.createElement('pre');
+        pre.className = 'code-block';
+        pre.textContent = JSON.stringify(data, null, 2);
+        entry.appendChild(pre);
+      }
+      
+      results.appendChild(entry);
+      results.scrollTop = results.scrollHeight;
+    }
+
+    // Export results
+    function exportResults() {
+      const results = document.getElementById('test-results').innerText;
+      const blob = new Blob([results], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tracking-test-results-${new Date().toISOString()}.txt`;
+      a.click();
+    }
+
+    // Check URL parameters on load
+    window.addEventListener('load', function() {
+      const params = new URLSearchParams(window.location.search);
+      const rfsn = params.get('rfsn');
+      if (rfsn) {
+        document.getElementById('test-rfsn').value = rfsn;
+        updateResults('Detected tracking parameter: ' + rfsn);
+      }
+      
+      // Auto-run storage tests
+      runStorageTests();
+    });
+  </script>
+</body>
+</html>
