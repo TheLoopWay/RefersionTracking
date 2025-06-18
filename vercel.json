@@ -1,17 +1,7 @@
 {
-  "buildCommand": "npm run build && cp public/embed.js public/calendar-tracking.js dist/",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": null,
-  "rewrites": [
-    {
-      "source": "/embed.js",
-      "destination": "/embed.js"
-    },
-    {
-      "source": "/api/track",
-      "destination": "/api/track.js"
-    }
-  ],
+  "installCommand": "npm install",
   "headers": [
     {
       "source": "/embed.js",
@@ -23,6 +13,36 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/integrations/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, X-Signature"
         }
       ]
     },

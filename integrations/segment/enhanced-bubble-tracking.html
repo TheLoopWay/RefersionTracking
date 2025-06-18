@@ -1,0 +1,208 @@
+<!-- ENHANCED BUBBLE TRACKING WITH IDENTITY RECOVERY -->
+<!-- This replaces/enhances the previous Bubble header code -->
+
+<!-- 1. Segment Analytics (same as before) -->
+<script>
+  !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","screen","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="VLvSfT5m9qElluhLqdE38FMoMvdgxj47";;analytics.SNIPPET_VERSION="5.2.0";
+  analytics.load("VLvSfT5m9qElluhLqdE38FMoMvdgxj47");
+  analytics.page();
+  }}();
+</script>
+
+<!-- 2. Enhanced Identity Recovery System -->
+<script>
+(function() {
+  'use strict';
+  
+  // Enhanced tracking with identity recovery
+  window.LoopTracking = {
+    // Try to recover affiliate ID from all possible sources
+    recoverAffiliateId: function() {
+      // Priority order for recovery:
+      
+      // 1. URL parameter (highest priority - fresh click)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlRfsn = urlParams.get('rfsn');
+      if (urlRfsn) {
+        console.log('[Loop] Affiliate from URL:', urlRfsn);
+        this.setAffiliateId(urlRfsn);
+        return urlRfsn;
+      }
+      
+      // 2. Segment anonymous ID mapping (cross-domain bridge)
+      const segmentId = urlParams.get('_sid');
+      if (segmentId && window.analytics) {
+        // Set the anonymous ID to maintain Segment identity
+        analytics.setAnonymousId(segmentId);
+      }
+      
+      // 3. Check Segment user traits (persisted from previous sessions)
+      if (window.analytics && analytics.user) {
+        const traits = analytics.user().traits();
+        if (traits.refersionId) {
+          console.log('[Loop] Affiliate from Segment traits:', traits.refersionId);
+          this.setAffiliateId(traits.refersionId);
+          return traits.refersionId;
+        }
+      }
+      
+      // 4. Check localStorage
+      const storedRfsn = localStorage.getItem('rfsn');
+      if (storedRfsn) {
+        console.log('[Loop] Affiliate from localStorage:', storedRfsn);
+        return storedRfsn;
+      }
+      
+      // 5. Check cookies
+      const cookieRfsn = this.getCookie('rfsn');
+      if (cookieRfsn) {
+        console.log('[Loop] Affiliate from cookie:', cookieRfsn);
+        return cookieRfsn;
+      }
+      
+      console.log('[Loop] No affiliate ID found');
+      return null;
+    },
+    
+    setAffiliateId: function(rfsn) {
+      // Store everywhere for redundancy
+      localStorage.setItem('rfsn', rfsn);
+      localStorage.setItem('rfsn_timestamp', new Date().toISOString());
+      localStorage.setItem('rfsn_source_url', window.location.href);
+      this.setCookie('rfsn', rfsn, 30);
+      
+      // Update Segment traits
+      if (window.analytics) {
+        analytics.identify({
+          refersionId: rfsn,
+          refersionTimestamp: new Date().toISOString(),
+          refersionSourceUrl: window.location.href
+        });
+      }
+      
+      console.log('[Loop] Affiliate ID set:', rfsn);
+    },
+    
+    setCookie: function(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+    },
+    
+    getCookie: function(name) {
+      const match = document.cookie.match(new RegExp(`${name}=([^;]+)`));
+      return match ? match[1] : null;
+    }
+  };
+  
+  // Enhanced Bubble helpers with identity recovery
+  window.BubbleHelpers = {
+    // Call this on EVERY page load in Bubble
+    initializeTracking: function() {
+      const rfsn = LoopTracking.recoverAffiliateId();
+      
+      // Track page view with context
+      if (window.analytics) {
+        analytics.page({
+          affiliateId: rfsn,
+          hasAffiliate: !!rfsn,
+          source: 'loopbiolabs'
+        });
+      }
+      
+      return {
+        affiliateId: rfsn,
+        hasTracking: !!rfsn,
+        timestamp: new Date().toISOString()
+      };
+    },
+    
+    // Enhanced user identification
+    identifyUser: function(email, firstName, lastName, bubbleUserId) {
+      const rfsn = LoopTracking.recoverAffiliateId();
+      
+      analytics.identify(email, {
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        refersionId: rfsn,
+        bubbleUserId: bubbleUserId, // Store Bubble's internal ID
+        source: 'loopbiolabs'
+      });
+      
+      // If user has affiliate but it's not in Bubble DB, return it
+      return {
+        affiliateId: rfsn,
+        shouldUpdateBubble: !!rfsn
+      };
+    },
+    
+    // Enhanced purchase tracking
+    trackPurchase: function(orderData) {
+      // Try to recover affiliate ID one more time
+      const rfsn = LoopTracking.recoverAffiliateId() || 
+                   orderData.affiliateId || 
+                   orderData.refersionId;
+      
+      // Track with Segment
+      analytics.track('Order Completed', {
+        orderId: orderData.orderId,
+        total: parseFloat(orderData.total || 0),
+        revenue: parseFloat(orderData.total || 0),
+        currency: orderData.currency || 'USD',
+        email: orderData.email,
+        affiliateId: rfsn,
+        source: 'loopbiolabs',
+        products: orderData.products || [{
+          productId: orderData.productId || 'PRODUCT',
+          sku: orderData.sku || orderData.productId || 'PRODUCT',
+          name: orderData.productName || 'Product',
+          price: parseFloat(orderData.total || 0),
+          quantity: parseInt(orderData.quantity || 1)
+        }]
+      });
+      
+      console.log('[Loop] Purchase tracked:', orderData.orderId, 'Affiliate:', rfsn);
+      
+      return {
+        tracked: true,
+        affiliateId: rfsn,
+        hasAffiliate: !!rfsn
+      };
+    }
+  };
+  
+  // Auto-initialize on page load
+  analytics.ready(function() {
+    // Recover identity immediately
+    const tracking = BubbleHelpers.initializeTracking();
+    console.log('[Loop] Page initialized with tracking:', tracking);
+  });
+  
+})();
+</script>
+
+<!-- 3. Bubble Workflow Helper Functions -->
+<script>
+// Simplified functions for Bubble workflows
+
+// Use this on page load
+function checkTracking() {
+  return BubbleHelpers.initializeTracking();
+}
+
+// Use this on login/signup
+function identifyBubbleUser(email, firstName, lastName, userId) {
+  return BubbleHelpers.identifyUser(email, firstName, lastName, userId);
+}
+
+// Use this on purchase
+function trackBubblePurchase(orderId, total, email, productName) {
+  return BubbleHelpers.trackPurchase({
+    orderId: orderId,
+    total: total,
+    email: email,
+    productName: productName
+  });
+}
+</script>

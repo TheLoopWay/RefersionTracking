@@ -157,16 +157,60 @@ export class FormHandler {
   }
 
   trackConversion() {
-    // Track conversion with Refersion
+    // Get tracking data
+    const trackingData = tracker.getFormData();
+    const formData = new FormData(this.form);
+    
+    // Prepare form data object
+    const formDataObj = {
+      email: formData.get('email'),
+      first_name: formData.get('first_name') || formData.get('firstname'),
+      last_name: formData.get('last_name') || formData.get('lastname'),
+      formId: this.formId,
+      ...trackingData
+    };
+    
+    // Track with Segment using the helper function from segment-tracking.js
+    if (window.trackFormWithSegment) {
+      const formName = this.form.dataset.formName || 'form-submission';
+      window.trackFormWithSegment(formDataObj, formName);
+    } else if (window.trackFormSubmission) {
+      // Fallback to TheLoopWay helper function
+      trackFormSubmission({
+        email: formData.get('email'),
+        firstName: formData.get('first_name') || formData.get('firstname'),
+        lastName: formData.get('last_name') || formData.get('lastname'),
+        formName: this.form.dataset.formName || 'form-submission',
+        formId: this.formId
+      });
+    } else if (window.analytics) {
+      // Direct Segment tracking as last resort
+      const email = formData.get('email');
+      if (email) {
+        analytics.identify(email, {
+          email: email,
+          firstName: formData.get('first_name') || formData.get('firstname'),
+          lastName: formData.get('last_name') || formData.get('lastname'),
+          refersionId: trackingData.refersionid,
+          source: 'forms_theloopway'
+        });
+        
+        analytics.track('Form Submitted', {
+          formName: this.form.dataset.formName || 'form-submission',
+          formId: this.formId,
+          affiliateId: trackingData.refersionid,
+          source: 'forms_theloopway'
+        });
+      }
+    }
+    
+    // Track conversion with Refersion (legacy)
     if (window.r && typeof window.r === 'function') {
-      // Get tracking data to include affiliate ID
-      const trackingData = tracker.getFormData();
       if (trackingData.refersionid) {
-        // Track the conversion
         window.r('conversion', {
           affiliateId: trackingData.refersionid,
-          orderId: 'form-' + Date.now(), // Unique ID for this submission
-          amount: 0, // No monetary value for form submission
+          orderId: 'form-' + Date.now(),
+          amount: 0,
           currency: 'USD'
         });
         console.log('Refersion conversion tracked for affiliate:', trackingData.refersionid);

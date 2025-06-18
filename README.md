@@ -1,17 +1,53 @@
-# LOOP Forms Platform
+# Loop Forms - Cross-Domain Tracking Solution
 
-A lightweight, deployable forms platform with built-in Refersion affiliate tracking. Works on all LOOP properties including TheLoopWay.com and LoopBioLabs.com.
+A comprehensive forms platform with integrated Refersion affiliate tracking and HubSpot CRM synchronization. Designed to work seamlessly across TheLoopWay.com (Squarespace) and LoopBioLabs.com (Bubble).
 
-## Features
+## 🚀 Features
 
-- 🚀 Fast, lightweight forms (Vite + Vanilla JS)
-- 📊 Automatic Refersion tracking integration
-- 🔒 Server-side cookie backup (Vercel Edge Functions)
-- 📱 Responsive, embeddable forms
-- 🎨 Clean, customizable design
-- 🌐 Multi-site support
+- **Segment-Powered Analytics** - Unified tracking across all properties
+- **Cross-Domain Attribution** - 95%+ accurate affiliate tracking
+- **Hosted Forms Platform** - Vite-powered forms at forms.theloopway.com
+- **HubSpot Integration** - Automatic CRM synchronization
+- **Refersion Integration** - Server-side conversion tracking
+- **Platform Integrations** - Production-ready code for Squarespace & Bubble
+- **Mobile Responsive** - Works on all devices
+- **Edge Functions** - Reliable webhook processing
 
-## Quick Start
+## 📁 Repository Structure
+
+```
+refersion/
+├── forms/                    # Form templates and assets
+│   ├── peptide-inquiry.html
+│   ├── consultation.html
+│   ├── peptide-education-intake.html
+│   └── js/                  # Form JavaScript modules
+│       ├── tracking.js      # RefersionTracker class
+│       └── forms.js         # Form handling
+├── public/                   # Static assets served by Vite
+│   ├── embed.js             # Squarespace embed script
+│   └── squarespace/         # Squarespace-specific integrations
+├── integrations/            # Platform-specific code
+│   ├── bubble/              # Bubble.io integration files
+│   │   ├── bubble-refersion-header.html
+│   │   ├── bubble-hubspot-sync.js
+│   │   └── bubble-simple-conversion.js
+│   └── squarespace/         # Squarespace integration files
+├── docs/                    # Documentation
+│   ├── bubble/              # Bubble-specific docs
+│   ├── squarespace/         # Squarespace-specific docs
+│   └── integration/         # Cross-domain integration docs
+├── tests/                   # Testing tools
+│   ├── cross-domain-tracking-test.html
+│   ├── quick-test.html
+│   └── validate-tracking.js
+├── scripts/                 # Utility scripts
+│   └── check-form.js        # HubSpot form validation
+└── api/                     # Edge functions
+    └── track.js             # Server-side tracking endpoint
+```
+
+## 🚀 Quick Start
 
 ```bash
 # Install dependencies
@@ -27,139 +63,174 @@ npm run build
 npm run deploy
 ```
 
-## Installation Guide
+## 🧪 Testing Your Implementation
 
-### ⚠️ IMPORTANT: Understand the Two Scripts
+### Quick Browser Test
+1. Upload `tests/quick-test.html` to both sites
+2. Visit: `yoursite.com/quick-test.html`
+3. Click "Run All Tests" to verify tracking
 
-**Before installing**, read [SCRIPTS-EXPLAINED.md](SCRIPTS-EXPLAINED.md) to understand:
-- 📋 **Form Embed Script** - Shows the actual form (required)
-- 🌐 **Global Tracking Script** - Captures tracking site-wide (optional)
+### Comprehensive Test Suite
+Open `tests/cross-domain-tracking-test.html` locally to:
+- Test storage mechanisms
+- Verify script loading
+- Generate test links
+- Validate cross-domain functionality
 
-### For Squarespace (TheLoopWay.com & LoopBioLabs.com)
+### Command Line Validation
+```bash
+# Test both sites
+node tests/validate-tracking.js
 
-1. **Go to your Squarespace page** where you want the form
-2. **Add a Code Block** (NOT Code Injection!)
-3. **Paste the FORM EMBED code**:
-
-```html
-<div id="loop-form"></div>
-<script src="https://forms.theloopway.com/embed.js" data-form="peptide-inquiry"></script>
+# Test specific site
+node tests/validate-tracking.js --site=loopway
+node tests/validate-tracking.js --site=biolabs
 ```
 
-That's it! The form will:
-- Load in an iframe (no script conflicts)
-- Auto-resize to fit content
-- Track Refersion affiliates automatically
-- Submit to HubSpot with proper form ID
+## 📋 Quick Setup
 
-### Advanced Options
+### 🎯 Production-Ready Integration
 
-```html
-<!-- Custom container ID -->
-<div id="my-custom-form"></div>
-<script src="https://forms.theloopway.com/embed.js" 
-        data-form="peptide-inquiry"
-        data-container="my-custom-form">
-</script>
+Your Segment workspace is configured:
+- **TheLoopWay**: Write Key `WAwgCVzGN82fhGNl8u4Ap3xjdqALerZW`
+- **LoopBioLabs**: Write Key `VLvSfT5m9qElluhLqdE38FMoMvdgxj47`
+- **Webhook**: `https://forms.theloopway.com/api/segment-to-refersion`
 
-<!-- Different forms -->
-<script src="https://forms.theloopway.com/embed.js" data-form="consultation"></script>
-<script src="https://forms.theloopway.com/embed.js" data-form="contact"></script>
-```
+### For TheLoopWay.com (Squarespace)
 
-## Creating New Forms
-
-1. Copy `forms/peptide-inquiry.html` as a template
-2. Update the form fields and HubSpot form ID
-3. Deploy to see changes live
-
-## How Tracking Works
-
-1. **URL Parameters**: Captures `?rfsn=XXXXX` from the parent page URL
-2. **localStorage Bridge**: Embed script reads parent page's localStorage and passes to iframe
-3. **Cross-Domain**: Works even when form is on different domain
-4. **Multi-Storage**: Saves to cookies and localStorage  
-5. **Server Backup**: Sends to edge function (optional)
-6. **Form Integration**: Automatically adds to HubSpot submissions
-
-### Example Flow
-```
-User visits: theloopway.com/page?rfsn=ABC123
-             ↓
-Global script stores in localStorage
-             ↓
-Embed script reads localStorage + passes to iframe
-             ↓
-Form loads with tracking preserved
-             ↓
-Submission includes refersionid: ABC123
-```
-
-## Project Structure
-
-```
-├── forms/              # Form pages
-│   ├── css/           # Styles
-│   ├── js/            # Form logic & tracking
-│   └── *.html         # Individual forms
-├── public/            # Static assets
-│   └── embed.js       # Embeddable script
-├── api/               # Vercel edge functions
-│   └── track.js       # Server-side tracking
-└── vercel.json        # Deployment config
-```
-
-## Deployment
-
-The platform is configured to deploy to `forms.theloopway.com`:
-
-1. Push to main branch
-2. Vercel auto-deploys
-3. Forms are available at `forms.theloopway.com/[form-name].html`
-
-## HubSpot Configuration
-
-Each form needs:
-- Portal ID: `242518594`
-- Form ID: Get from HubSpot
-- Custom properties: `refersionid`, `refersion_timestamp`, `refersion_source_url`
-
-## Multi-Site Support
-
-This platform works seamlessly across all LOOP properties:
-
-- **TheLoopWay.com** - Main site
-- **LoopBioLabs.com** - E-commerce site  
-- **Any other domain** - Just embed and go
-
-The tracking works cross-domain, so affiliates are tracked even when the form is hosted on a different domain.
-
-## Creating New Forms
-
-1. **Copy a template**:
-   ```bash
-   cp forms/peptide-inquiry.html forms/my-new-form.html
+1. **Add Global Tracking** (Settings → Advanced → Code Injection → Header):
+   ```html
+   <!-- Copy complete code from: integrations/segment/theloopway-header.html -->
    ```
 
-2. **Update the form**:
-   - Change form fields
-   - Update text content
-   - Replace the HubSpot form ID
-
-3. **Embed on any site**:
+2. **Add Forms to Pages**:
    ```html
    <div id="loop-form"></div>
-   <script src="https://forms.theloopway.com/embed.js" data-form="my-new-form"></script>
+   <script src="https://forms.theloopway.com/embed.js" data-form="peptide-inquiry"></script>
    ```
 
-## Documentation
+### For LoopBioLabs.com (Bubble)
 
-- [SCRIPTS EXPLAINED](SCRIPTS-EXPLAINED.md) - **READ THIS FIRST!** Visual guide to the two scripts
-- [Installation Guide](INSTALLATION.md) - Detailed setup instructions
-- [Squarespace Guide](SQUARESPACE-GUIDE.md) - Quick start for Squarespace
-- [Calendar Tracking](CALENDAR-TRACKING.md) - HubSpot meeting scheduler integration
-- [CLAUDE.md](CLAUDE.md) - AI assistant documentation
+1. **Add Global Tracking** (Settings → SEO/metatags → Script in header):
+   ```html
+   <!-- Copy complete code from: integrations/segment/loopbiolabs-header.html -->
+   ```
 
-## Support
+2. **Set Up Workflows**:
+   ```javascript
+   // On User Login/Signup:
+   BubbleHelpers.identifyUser(email, firstName, lastName);
+   
+   // On Purchase:
+   BubbleHelpers.trackPurchase({orderId, total, email, productName});
+   ```
 
-For issues or questions, contact LOOP support.
+## 🔗 Cross-Domain Setup
+
+To ensure tracking works between sites:
+
+1. **Use Consistent Storage Keys**:
+   - `rfsn` - Affiliate ID
+   - `rfsn_timestamp` - Click timestamp
+   - `rfsn_source_url` - Original landing page
+
+2. **Add Cross-Domain Links**:
+   ```javascript
+   // From TheLoopWay → LoopBioLabs
+   const url = `https://loopbiolabs.com/shop?rfsn=${localStorage.getItem('rfsn')}`;
+   ```
+
+3. **Configure HubSpot Properties**:
+   - Ensure both sites use `refersionid` property
+   - Map to same contact records by email
+
+See `docs/integration/CROSS-DOMAIN-TRACKING.md` for complete guide.
+
+## 📊 Available Forms
+
+- **peptide-inquiry** - Basic inquiry form
+- **consultation** - Consultation request
+- **peptide-education-intake** - Comprehensive intake form
+
+### Creating New Forms
+
+1. Copy existing template:
+   ```bash
+   cp forms/peptide-inquiry.html forms/new-form.html
+   ```
+
+2. Update HubSpot form ID and fields
+
+3. Add to `vite.config.js`:
+   ```js
+   input: {
+     // ... existing forms
+     newForm: resolve(__dirname, 'forms/new-form.html')
+   }
+   ```
+
+## 🔧 Configuration
+
+### Segment Analytics
+- **TheLoopWay Source**: `WAwgCVzGN82fhGNl8u4Ap3xjdqALerZW`
+- **LoopBioLabs Source**: `VLvSfT5m9qElluhLqdE38FMoMvdgxj47`
+- **Webhook URL**: `https://forms.theloopway.com/api/segment-to-refersion`
+
+### Environment Variables
+```env
+REFERSION_API_KEY=your-secret-key-here
+HUBSPOT_ACCESS_TOKEN=your-token-here
+```
+
+### HubSpot Settings
+- Portal ID: `242518594`
+- Key property: `refersionid` (mapped from Segment)
+
+### Refersion Settings
+- Public Key: `pub_ee6ba2b9f9295e53f4eb`
+- Conversions tracked via Segment webhook
+
+## 📚 Documentation
+
+### 🎯 Our Approach
+- **[APPROACH-SUMMARY.md](docs/APPROACH-SUMMARY.md)** - Clear explanation of what we use (and don't use)
+
+### 🚀 Quick Start
+- **[SEGMENT-PRODUCTION-GUIDE.md](docs/integration/SEGMENT-PRODUCTION-GUIDE.md)** - Complete Segment setup
+- **[SEGMENT-QUICK-START.md](docs/integration/SEGMENT-QUICK-START.md)** - 5-minute implementation
+
+### 📖 Platform Guides
+- **[CROSS-DOMAIN-TRACKING.md](docs/integration/CROSS-DOMAIN-TRACKING.md)** - Cross-domain guide
+- **[BUBBLE-WORKFLOWS.md](docs/bubble/BUBBLE-WORKFLOWS.md)** - Bubble workflow setup  
+- **[SQUARESPACE-GUIDE.md](docs/squarespace/SQUARESPACE-GUIDE.md)** - Squarespace setup
+- **[INSTALLATION.md](docs/INSTALLATION.md)** - Detailed setup instructions
+
+## 🐛 Troubleshooting
+
+### Tracking Not Working?
+1. Run the quick test: `tests/quick-test.html`
+2. Check browser console for errors
+3. Verify scripts are loading
+4. Ensure URLs include `?rfsn=` parameter
+
+### Form Not Submitting?
+1. Check HubSpot form ID is correct
+2. Verify all required fields are mapped
+3. Run `npm run check-form` to validate
+
+### Cross-Domain Issues?
+1. Check both sites have tracking scripts
+2. Verify localStorage keys match
+3. Test with `tests/cross-domain-tracking-test.html`
+
+## 🚀 Deployment
+
+The platform auto-deploys to Vercel:
+
+1. Push changes to `main` branch
+2. Vercel builds and deploys
+3. Available at `forms.theloopway.com`
+
+## 📞 Support
+
+For issues or questions, refer to the test suite first, then contact LOOP support.

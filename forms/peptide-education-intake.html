@@ -91,7 +91,7 @@
     
     <div id="form-message" class="form-message"></div>
     
-    <form id="peptide-intake-form">
+    <form id="peptide-intake-form" data-form-name="Peptide Education Intake">
       <!-- Basic Information -->
       <div class="form-section">
         <div class="form-row">
@@ -467,6 +467,7 @@
   <script type="module">
     import { FormHandler } from '/js/forms.js';
     import { tracker } from '/js/tracking.js';
+    import '/js/segment-tracking.js';
     
     // Initialize tracking
     tracker.init();

@@ -1,0 +1,152 @@
+<!-- SEGMENT + REFERSION TRACKING FOR LOOPBIOLABS.COM -->
+<!-- Add this to Bubble: Settings → SEO/metatags → Script in header -->
+
+<!-- Segment Analytics -->
+<script>
+  !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","screen","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="VLvSfT5m9qElluhLqdE38FMoMvdgxj47";;analytics.SNIPPET_VERSION="5.2.0";
+  analytics.load("VLvSfT5m9qElluhLqdE38FMoMvdgxj47");
+  analytics.page();
+  }}();
+</script>
+
+<!-- Refersion + Segment Integration -->
+<script>
+// Unified tracking for LoopBioLabs
+(function() {
+  'use strict';
+  
+  // Core tracking functions
+  window.LoopTracking = {
+    // Get or set affiliate ID
+    getAffiliateId: function() {
+      // Check URL first
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlRfsn = urlParams.get('rfsn');
+      if (urlRfsn) {
+        this.setAffiliateId(urlRfsn);
+        return urlRfsn;
+      }
+      
+      // Check Segment user traits
+      if (window.analytics && analytics.user) {
+        const traits = analytics.user().traits();
+        if (traits.refersionId) {
+          return traits.refersionId;
+        }
+      }
+      
+      // Check storage
+      return localStorage.getItem('rfsn') || this.getCookie('rfsn') || null;
+    },
+    
+    setAffiliateId: function(rfsn) {
+      // Save everywhere
+      localStorage.setItem('rfsn', rfsn);
+      localStorage.setItem('rfsn_timestamp', new Date().toISOString());
+      localStorage.setItem('rfsn_source_url', window.location.href);
+      this.setCookie('rfsn', rfsn, 30);
+      
+      console.log('[Loop Tracking] Affiliate captured:', rfsn);
+    },
+    
+    // Cookie helpers
+    setCookie: function(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+    },
+    
+    getCookie: function(name) {
+      const match = document.cookie.match(new RegExp(`${name}=([^;]+)`));
+      return match ? match[1] : null;
+    }
+  };
+  
+  // Wait for Segment to load
+  analytics.ready(function() {
+    // Capture affiliate on page load
+    const rfsn = LoopTracking.getAffiliateId();
+    if (rfsn) {
+      // Track with Segment
+      analytics.track('Affiliate Link Clicked', {
+        affiliateId: rfsn,
+        landingPage: window.location.href,
+        referrer: document.referrer,
+        source: 'loopbiolabs'
+      });
+      
+      // Add to user traits
+      analytics.identify({
+        refersionId: rfsn,
+        refersionTimestamp: new Date().toISOString(),
+        refersionSourceUrl: window.location.href
+      });
+    }
+  });
+  
+  // Bubble helper functions
+  window.BubbleHelpers = {
+    // Call on user login/signup
+    identifyUser: function(email, firstName, lastName) {
+      const rfsn = LoopTracking.getAffiliateId();
+      
+      analytics.identify(email, {
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        refersionId: rfsn,
+        source: 'loopbiolabs'
+      });
+      
+      console.log('[Loop Tracking] User identified:', email, 'with affiliate:', rfsn);
+      return rfsn; // Return for Bubble to store
+    },
+    
+    // Call on purchase
+    trackPurchase: function(orderData) {
+      const rfsn = LoopTracking.getAffiliateId();
+      
+      // Track with Segment
+      analytics.track('Order Completed', {
+        orderId: orderData.orderId,
+        total: parseFloat(orderData.total || 0),
+        revenue: parseFloat(orderData.total || 0),
+        currency: orderData.currency || 'USD',
+        email: orderData.email,
+        affiliateId: rfsn,
+        source: 'loopbiolabs',
+        products: orderData.products || [{
+          productId: orderData.productId || 'PRODUCT',
+          sku: orderData.sku || orderData.productId || 'PRODUCT',
+          name: orderData.productName || 'Product',
+          price: parseFloat(orderData.total || 0),
+          quantity: parseInt(orderData.quantity || 1)
+        }]
+      });
+      
+      console.log('[Loop Tracking] Purchase tracked:', orderData.orderId, 'with affiliate:', rfsn);
+      return rfsn;
+    },
+    
+    // Get tracking for Bubble database
+    getTracking: function() {
+      return {
+        affiliateId: LoopTracking.getAffiliateId(),
+        anonymousId: analytics.user ? analytics.user().anonymousId() : null,
+        timestamp: new Date().toISOString()
+      };
+    },
+    
+    // Simple purchase tracking (legacy)
+    trackOrder: function(orderId, total, email) {
+      return this.trackPurchase({
+        orderId: orderId,
+        total: total,
+        email: email,
+        quantity: 1
+      });
+    }
+  };
+  
+})();
+</script>
