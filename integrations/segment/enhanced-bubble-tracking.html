@@ -117,23 +117,37 @@
       };
     },
     
-    // Enhanced user identification
+    // Enhanced user identification with lifetime attribution
     identifyUser: function(email, firstName, lastName, bubbleUserId) {
       const rfsn = LoopTracking.recoverAffiliateId();
       
-      analytics.identify(email, {
+      // Get current user traits to check for existing attribution
+      const currentTraits = analytics.user().traits();
+      
+      // Build traits object
+      const traits = {
         email: email,
         firstName: firstName,
         lastName: lastName,
         refersionId: rfsn,
         bubbleUserId: bubbleUserId, // Store Bubble's internal ID
         source: 'loopbiolabs'
-      });
+      };
+      
+      // Set first-touch attribution if this is their first affiliate
+      if (rfsn && !currentTraits.refersionFirstTouch) {
+        traits.refersionFirstTouch = rfsn;
+        traits.refersionAttributionDate = new Date().toISOString();
+        console.log('[Loop] Setting lifetime attribution:', rfsn);
+      }
+      
+      analytics.identify(email, traits);
       
       // If user has affiliate but it's not in Bubble DB, return it
       return {
         affiliateId: rfsn,
-        shouldUpdateBubble: !!rfsn
+        shouldUpdateBubble: !!rfsn,
+        isFirstAttribution: rfsn && !currentTraits.refersionFirstTouch
       };
     },
     
