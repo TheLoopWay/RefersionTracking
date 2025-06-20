@@ -47,7 +47,10 @@ export default async function handler(req, res) {
   try {
     // Parse the Segment event data
     // Vercel automatically parses JSON bodies
-    const data = req.body;
+    const body = req.body;
+    
+    // Handle both direct events and wrapped events (Segment webhooks wrap in "event")
+    const data = body.event || body;
     
     // Log for debugging (visible in Vercel Functions logs)
     console.log(`[Segment Webhook] Received event: ${data.type} - ${data.event}`);
