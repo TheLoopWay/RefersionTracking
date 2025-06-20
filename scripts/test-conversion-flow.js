@@ -28,9 +28,9 @@ async function testConversionFlow() {
   // Step 3: Simulate user arriving at LoopBioLabs
   console.log(chalk.yellow('3️⃣  User visits LoopBioLabs (no direct link)'));
   console.log('   Tracking recovery methods:');
-  console.log('   - URL parameters: ' + chalk.red('✗ Not available'));
+  console.log('   - URL parameters: ' + chalk.red('✗ Not available (no direct link)'));
   console.log('   - Email match via Segment: ' + chalk.green('✓ Available'));
-  console.log('   - Sync API: ' + chalk.green('✓ Available\n'));
+  console.log('   - Segment identity traits: ' + chalk.green('✓ Available\n'));
   
   // Step 4: Test the actual webhook
   console.log(chalk.yellow('4️⃣  Testing Order Completed webhook'));
