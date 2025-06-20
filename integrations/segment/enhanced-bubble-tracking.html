@@ -196,7 +196,7 @@ function identifyBubbleUser(email, firstName, lastName, userId) {
   return BubbleHelpers.identifyUser(email, firstName, lastName, userId);
 }
 
-// Use this on purchase
+// Use this on purchase - SINGLE PRODUCT
 function trackBubblePurchase(orderId, total, email, productName) {
   return BubbleHelpers.trackPurchase({
     orderId: orderId,
@@ -204,5 +204,41 @@ function trackBubblePurchase(orderId, total, email, productName) {
     email: email,
     productName: productName
   });
+}
+
+// Use this on purchase - MULTIPLE PRODUCTS
+function trackBubblePurchaseWithItems(orderId, total, email, products) {
+  // Products should be an array of objects with: productId, name, price, quantity
+  return BubbleHelpers.trackPurchase({
+    orderId: orderId,
+    total: total,
+    email: email,
+    products: products
+  });
+}
+
+// Helper to format Bubble list of products for tracking
+function formatBubbleProducts(productsList) {
+  // Use this in Bubble to format a list of cart items
+  // Example: formatBubbleProducts(Shopping Cart's Items:format as JSON)
+  try {
+    const products = JSON.parse(productsList);
+    return products.map(item => ({
+      productId: item.product_id || item.id || 'PRODUCT',
+      sku: item.sku || item.product_id || 'PRODUCT',
+      name: item.name || item.product_name || 'Product',
+      price: parseFloat(item.price || 0),
+      quantity: parseInt(item.quantity || 1)
+    }));
+  } catch (e) {
+    console.error('[Loop] Error formatting products:', e);
+    return [{
+      productId: 'PRODUCT',
+      sku: 'PRODUCT',
+      name: 'Product',
+      price: 0,
+      quantity: 1
+    }];
+  }
 }
 </script>
