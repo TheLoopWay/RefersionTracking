@@ -133,19 +133,44 @@
   
   <script type="module">
     import { tracker } from '/js/tracking.js';
+    import { initializeSegment, trackFormWithSegment } from '/js/segment-tracking.js';
+    
+    // Initialize Segment Analytics
+    initializeSegment();
     
     // Initialize tracking for thank you page
     tracker.init();
     
+    // Track thank you page view with Segment
+    if (window.analytics) {
+      analytics.page('Thank You - Intake Form', {
+        formType: 'peptide-education-intake',
+        source: window.location.hostname
+      });
+    }
+    
     // Track conversion if there's a referral
     const trackingData = tracker.getFormData();
-    if (trackingData.refersionid && window.r && typeof window.r === 'function') {
-      window.r('conversion', {
-        affiliateId: trackingData.refersionid,
-        orderId: 'intake-' + Date.now(),
-        amount: 0,
-        currency: 'USD'
-      });
+    if (trackingData.refersionid) {
+      // Track with Refersion if available
+      if (window.r && typeof window.r === 'function') {
+        window.r('conversion', {
+          affiliateId: trackingData.refersionid,
+          orderId: 'intake-' + Date.now(),
+          amount: 0,
+          currency: 'USD'
+        });
+      }
+      
+      // Also track with Segment for consistency
+      if (window.analytics) {
+        analytics.track('Form Completed', {
+          formId: 'peptide-education-intake',
+          formType: 'intake',
+          affiliateId: trackingData.refersionid,
+          source: 'thank-you-page'
+        });
+      }
     }
   </script>
 </body>

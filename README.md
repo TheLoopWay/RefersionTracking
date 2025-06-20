@@ -21,30 +21,35 @@ refersion/
 │   ├── peptide-inquiry.html
 │   ├── consultation.html
 │   ├── peptide-education-intake.html
+│   ├── thank-you-intake.html
 │   └── js/                  # Form JavaScript modules
 │       ├── tracking.js      # RefersionTracker class
-│       └── forms.js         # Form handling
+│       ├── forms.js         # Form handling
+│       └── segment-tracking.js # Segment integration
 ├── public/                   # Static assets served by Vite
-│   ├── embed.js             # Squarespace embed script
-│   └── squarespace/         # Squarespace-specific integrations
+│   ├── embed.js             # Form embed script
+│   └── images/              # Documentation images
 ├── integrations/            # Platform-specific code
-│   ├── bubble/              # Bubble.io integration files
-│   │   ├── bubble-refersion-header.html
-│   │   ├── bubble-hubspot-sync.js
-│   │   └── bubble-simple-conversion.js
-│   └── squarespace/         # Squarespace integration files
+│   └── segment/             # Segment integration files
+│       ├── enhanced-bubble-tracking.html
+│       ├── theloopway-header.html
+│       └── loopbiolabs-header.html
 ├── docs/                    # Documentation
-│   ├── bubble/              # Bubble-specific docs
-│   ├── squarespace/         # Squarespace-specific docs
-│   └── integration/         # Cross-domain integration docs
+│   ├── integration/         # Integration guides
+│   │   ├── SEGMENT-INTEGRATION.md
+│   │   ├── SEGMENT-PRODUCTION-GUIDE.md
+│   │   └── TESTING-GUIDE.md
+│   └── APPROACH-SUMMARY.md  # Our tracking approach
 ├── tests/                   # Testing tools
 │   ├── cross-domain-tracking-test.html
-│   ├── quick-test.html
-│   └── validate-tracking.js
+│   └── quick-test.html
 ├── scripts/                 # Utility scripts
-│   └── check-form.js        # HubSpot form validation
+│   ├── test-webhook.js      # Test Segment webhook
+│   ├── test-full-attribution.js # Full test suite
+│   └── verify-endpoints.js  # Verify API endpoints
 └── api/                     # Edge functions
-    └── track.js             # Server-side tracking endpoint
+    ├── segment-to-refersion.js # Main webhook handler
+    └── track.js             # Backup tracking endpoint
 ```
 
 ## 🚀 Quick Start
@@ -77,15 +82,19 @@ Open `tests/cross-domain-tracking-test.html` locally to:
 - Generate test links
 - Validate cross-domain functionality
 
-### Command Line Validation
+### Command Line Testing
 ```bash
-# Test both sites
-node tests/validate-tracking.js
+# Run full attribution test suite
+npm run test-full-attribution
 
-# Test specific site
-node tests/validate-tracking.js --site=loopway
-node tests/validate-tracking.js --site=biolabs
+# Test the webhook
+npm run test-webhook
+
+# Verify all endpoints are working
+npm run verify-endpoints
 ```
+
+For detailed testing guide, see [TESTING-GUIDE.md](docs/TESTING-GUIDE.md)
 
 ## 📋 Quick Setup
 
@@ -225,11 +234,41 @@ HUBSPOT_ACCESS_TOKEN=your-token-here
 
 ## 🚀 Deployment
 
-The platform auto-deploys to Vercel:
+The platform auto-deploys to Vercel with support for multiple domains:
 
+### Primary Domain
+- **`forms.theloopway.com`** - Main forms platform
+
+### Additional Domain (Recommended)
+To improve attribution on LoopBioLabs, add a subdomain:
+- **`forms.loopbiolabs.com`** - Same forms on LoopBioLabs domain
+
+Benefits:
+- ✅ First-party cookies on LoopBioLabs domain
+- ✅ Better user trust (matching domain)
+- ✅ Potential for improved tracking
+
+### Setting Up Additional Domain
+```bash
+# In Vercel dashboard or CLI
+vercel domains add forms.loopbiolabs.com
+
+# Add CNAME record in your DNS:
+# forms.loopbiolabs.com → cname.vercel-dns.com
+```
+
+### Deployment Process
 1. Push changes to `main` branch
 2. Vercel builds and deploys
-3. Available at `forms.theloopway.com`
+3. Available on all configured domains
+
+### Updating Form Embeds for LoopBioLabs
+Once subdomain is set up:
+```html
+<!-- On LoopBioLabs pages, use the matching domain -->
+<div id="loop-form"></div>
+<script src="https://forms.loopbiolabs.com/embed.js" data-form="peptide-inquiry"></script>
+```
 
 ## 📞 Support
 
