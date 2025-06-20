@@ -217,28 +217,85 @@ function trackBubblePurchaseWithItems(orderId, total, email, products) {
   });
 }
 
-// Helper to format Bubble list of products for tracking
+/**
+ * Helper to format Bubble's cart/order items for Segment tracking
+ * 
+ * WHY THIS EXISTS:
+ * Bubble's UI makes it painful to build complex JavaScript objects with their
+ * click-based expression builder. Instead of clicking through nested menus to
+ * build each product object, you can use Bubble's ":format as JSON" operator
+ * to pass the entire cart at once.
+ * 
+ * HOW TO USE IN BUBBLE:
+ * 1. In your purchase workflow, add a "Run JavaScript" action
+ * 2. Instead of building complex nested objects with clicks, just write:
+ *    
+ *    trackBubblePurchaseWithItems(
+ *      This Order's ID,
+ *      This Order's Total,
+ *      Current User's email,
+ *      formatBubbleProducts(Shopping Cart's Items:format as JSON)
+ *    )
+ * 
+ * WHAT BUBBLE SENDS:
+ * When you use "Shopping Cart's Items:format as JSON", Bubble sends:
+ * '[{"product_id":"123","name":"Peptide","price":99.99,"quantity":2},...]'
+ * 
+ * WHAT THIS FUNCTION DOES:
+ * 1. Parses the JSON string from Bubble
+ * 2. Maps Bubble's field names to what Segment/Refersion expects
+ * 3. Handles different possible field names (product_id vs id, etc.)
+ * 4. Returns properly formatted array for tracking
+ * 
+ * @param {string} productsList - JSON string from Bubble's ":format as JSON"
+ * @returns {Array} Products array formatted for Segment/Refersion
+ */
 function formatBubbleProducts(productsList) {
-  // Use this in Bubble to format a list of cart items
-  // Example: formatBubbleProducts(Shopping Cart's Items:format as JSON)
   try {
+    // Parse the JSON string that Bubble sends
     const products = JSON.parse(productsList);
+    
+    // Map each item to the format Segment expects
     return products.map(item => ({
-      productId: item.product_id || item.id || 'PRODUCT',
-      sku: item.sku || item.product_id || 'PRODUCT',
-      name: item.name || item.product_name || 'Product',
-      price: parseFloat(item.price || 0),
-      quantity: parseInt(item.quantity || 1)
+      // Handle different field names Bubble might use
+      productId: item.product_id || item.id || item.sku || 'PRODUCT',
+      sku: item.sku || item.product_id || item.id || 'PRODUCT',
+      name: item.name || item.product_name || item.title || 'Product',
+      price: parseFloat(item.price || item.amount || 0),
+      quantity: parseInt(item.quantity || item.qty || 1),
+      
+      // Optional fields if your Bubble app has them
+      category: item.category || undefined,
+      brand: item.brand || undefined,
+      variant: item.variant || undefined
     }));
   } catch (e) {
+    // If JSON parsing fails, return a single generic product
+    // This ensures tracking still works even if product details fail
     console.error('[Loop] Error formatting products:', e);
+    console.error('[Loop] Received productsList:', productsList);
+    
     return [{
       productId: 'PRODUCT',
-      sku: 'PRODUCT',
+      sku: 'PRODUCT', 
       name: 'Product',
       price: 0,
       quantity: 1
     }];
   }
 }
+
+/**
+ * ALTERNATIVE: If ":format as JSON" doesn't work well in your Bubble app,
+ * you can build a simpler version that takes individual items:
+ * 
+ * function trackSingleProduct(orderId, total, email, productId, productName, productPrice) {
+ *   return trackBubblePurchaseWithItems(orderId, total, email, [{
+ *     productId: productId,
+ *     name: productName,
+ *     price: productPrice,
+ *     quantity: 1
+ *   }]);
+ * }
+ */
 </script>
