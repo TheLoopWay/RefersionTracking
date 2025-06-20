@@ -1,11 +1,34 @@
 /**
- * Enhanced Segment → Refersion webhook with lightweight logging
- * Logs conversion attempts for debugging without needing a database
+ * Enhanced Segment → Refersion Webhook with In-Memory Logging
+ * 
+ * Purpose:
+ * This is an enhanced version of the segment-to-refersion webhook that includes
+ * in-memory logging of conversion attempts. This helps debug attribution issues
+ * without needing a full database setup.
+ * 
+ * Features:
+ * - Logs last 100 conversion attempts in memory
+ * - Tracks success/failure status for each attempt
+ * - Provides debug endpoint to view recent conversions
+ * - Helps identify patterns in attribution failures
+ * 
+ * Usage:
+ * 1. Replace segment-to-refersion.js with this file for enhanced logging
+ * 2. Access debug info at: /api/conversion-debug?key=YOUR_DEBUG_KEY
+ * 
+ * Note:
+ * In-memory storage resets on deploy. For persistent logging, consider:
+ * - Vercel KV for simple key-value storage
+ * - PostgreSQL for complex queries
+ * - CloudWatch/Datadog for proper logging infrastructure
+ * 
+ * @see segment-to-refersion.js for the simpler version without logging
  */
 
 export const runtime = 'edge';
 
-// Simple in-memory store for recent conversions (last 100)
+// In-memory store for recent conversion attempts
+// This resets when the function cold starts or redeploys
 const recentConversions = [];
 const MAX_CONVERSIONS = 100;
 
