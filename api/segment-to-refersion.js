@@ -83,16 +83,85 @@ export default async function handler(req, res) {
 
       console.log(`[Segment Webhook] Processing order ${properties.orderId} for affiliate ${affiliateId}`);
 
-      // TODO: Add actual Refersion API call here
-      // For now, we're just acknowledging the webhook
-      // When REFERSION_API_KEY is set, this will create actual conversions
-      return res.status(200).json({ 
-        success: true,
-        message: 'Conversion would be tracked',
-        orderId: properties.orderId,
-        affiliateId: affiliateId,
-        note: 'Add REFERSION_API_KEY environment variable to enable actual tracking'
-      });
+      // Check if we have Refersion API key
+      if (!process.env.REFERSION_API_KEY) {
+        console.log('[Segment Webhook] REFERSION_API_KEY not set - skipping API call');
+        return res.status(200).json({ 
+          success: true,
+          message: 'Conversion would be tracked (API key not set)',
+          orderId: properties.orderId,
+          affiliateId: affiliateId,
+          note: 'Add REFERSION_API_KEY environment variable to enable actual tracking'
+        });
+      }
+
+      // Prepare Refersion API payload
+      const refersionPayload = {
+        affiliate_code: affiliateId,
+        commission: parseFloat(properties.total || properties.revenue || 0),
+        currency_code: properties.currency || 'USD',
+        order_id: properties.orderId,
+        customer: {
+          customer_id: data.userId || properties.email,
+          email: properties.email || context.traits?.email,
+          first_name: properties.firstName || context.traits?.firstName || '',
+          last_name: properties.lastName || context.traits?.lastName || '',
+          ip_address: context.ip || null
+        },
+        cart_items: (properties.products || []).map(product => ({
+          sku: product.sku || product.productId || 'PRODUCT',
+          name: product.name || 'Product',
+          quantity: parseInt(product.quantity || 1),
+          price: parseFloat(product.price || 0),
+          product_id: product.productId || product.sku || 'PRODUCT'
+        }))
+      };
+
+      console.log('[Segment Webhook] Sending to Refersion:', JSON.stringify(refersionPayload));
+
+      // Call Refersion API
+      try {
+        const refersionResponse = await fetch('https://api.refersion.com/v2/manual_credit', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.REFERSION_API_KEY}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(refersionPayload)
+        });
+
+        const refersionResult = await refersionResponse.json();
+
+        if (refersionResponse.ok) {
+          console.log('[Segment Webhook] Refersion conversion created:', refersionResult);
+          return res.status(200).json({ 
+            success: true,
+            message: 'Conversion tracked successfully',
+            orderId: properties.orderId,
+            affiliateId: affiliateId,
+            refersionResponse: refersionResult
+          });
+        } else {
+          // Refersion API returned an error
+          console.error('[Segment Webhook] Refersion API error:', refersionResult);
+          
+          // Still return 200 to Segment to prevent retries for business logic errors
+          // (e.g., duplicate order ID, invalid affiliate code)
+          return res.status(200).json({ 
+            success: false,
+            message: 'Refersion API error',
+            orderId: properties.orderId,
+            affiliateId: affiliateId,
+            error: refersionResult.error || refersionResult.message || 'Unknown error',
+            details: refersionResult
+          });
+        }
+      } catch (apiError) {
+        // Network or parsing error - this should trigger a retry
+        console.error('[Segment Webhook] Refersion API call failed:', apiError);
+        throw apiError; // Re-throw to trigger 500 response and Segment retry
+      }
     }
 
     // Not an Order Completed event - acknowledge receipt but don't process
