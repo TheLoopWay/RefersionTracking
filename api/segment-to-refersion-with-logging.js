@@ -25,7 +25,7 @@
  * @see segment-to-refersion.js for the simpler version without logging
  */
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // In-memory store for recent conversion attempts
 // This resets when the function cold starts or redeploys
@@ -58,10 +58,23 @@ export default async function handler(req, res) {
       const { properties = {}, context = {} } = data;
       
       // Try to find affiliate ID from multiple sources
-      const affiliateId = properties.affiliateId || 
-                         properties.refersionId ||
-                         context.traits?.refersionId ||
-                         null;
+      const affiliateId =
+        // Standard mapping from our front-end
+        properties.affiliateId ||
+        properties.refersionId ||
+        // HubSpot style snake_case
+        properties.refersion_affiliate_id ||
+        properties.refersion_affiliateId ||
+        // Legacy camelCase in traits
+        context.traits?.refersionId ||
+        context.traits?.refersion_affiliate_id ||
+        // Old `refersionid` field sometimes used in HubSpot exports
+        properties.refersionid ||
+        // Occasionally merchants attach affiliate at line-item level (take first)
+        (Array.isArray(properties.products) && properties.products.length > 0
+          ? properties.products.find((p) => p.affiliateId || p.refersionId)?.affiliateId ||
+            properties.products.find((p) => p.refersionId)?.refersionId || null
+          : null);
       
       conversionAttempt.affiliateId = affiliateId;
       conversionAttempt.orderId = properties.orderId;
@@ -81,6 +94,13 @@ export default async function handler(req, res) {
       }
       
       // Call Refersion API
+      console.log('[Refersion] Using keys:', {
+        hasPublic: !!process.env.REFERSION_PUBLIC_KEY,
+        hasSecret: !!process.env.REFERSION_API_KEY,
+        pubPrefix: process.env.REFERSION_PUBLIC_KEY ? process.env.REFERSION_PUBLIC_KEY.slice(0, 6) + '***' : 'undefined',
+        secPrefix: process.env.REFERSION_API_KEY ? process.env.REFERSION_API_KEY.slice(0, 6) + '***' : 'undefined',
+      });
+
       const refersionData = {
         order_id: properties.orderId,
         currency_code: properties.currency || 'USD',
@@ -98,11 +118,13 @@ export default async function handler(req, res) {
         }))
       };
       
-      const refersionResponse = await fetch('https://api.refersion.com/v2/conversions', {
+      const refersionResponse = await fetch('https://api.refersion.com/v2/conversion', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.REFERSION_API_KEY}`,
-          'Content-Type': 'application/json'
+          'Refersion-Public-Key': process.env.REFERSION_PUBLIC_KEY,
+          'Refersion-Secret-Key': process.env.REFERSION_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(refersionData)
       });
